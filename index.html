@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TMB Trip Tracker</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #071018;
+      --bg-soft: #0d1822;
+      --panel: rgba(18, 31, 43, 0.88);
+      --panel-strong: #142333;
+      --line: rgba(190, 213, 226, 0.16);
+      --line-strong: rgba(190, 213, 226, 0.28);
+      --text: #f4f0e8;
+      --muted: #a8b5bf;
+      --faint: #6f7e88;
+      --accent: #4A9ECC;
+      --accent-soft: rgba(74, 158, 204, 0.16);
+      --green: #67d391;
+      --yellow: #e9c46a;
+      --blue: #5ab3e8;
+      --city: #c9a7ff;
+      --danger: #f07c7c;
+      --shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
+      --radius: 22px;
+      --radius-sm: 14px;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 15% -10%, rgba(74, 158, 204, 0.32), transparent 30rem),
+        radial-gradient(circle at 92% 6%, rgba(233, 196, 106, 0.14), transparent 28rem),
+        linear-gradient(180deg, #071018 0%, #09141d 52%, #050b11 100%);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      padding: 20px 14px 96px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      padding: 18px 2px 10px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.15rem, 12vw, 5.8rem);
+      line-height: 0.9;
+      letter-spacing: -0.08em;
+      margin: 0;
+      max-width: 850px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 720px;
+      margin: 16px 0 0;
+      font-size: 1rem;
+    }
+
+    .trip-pulse {
+      margin-top: 18px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .countdown,
+    .pending-panel {
+      background: linear-gradient(135deg, rgba(20, 35, 51, 0.96), rgba(12, 24, 34, 0.92));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .countdown::after,
+    .pending-panel::after {
+      content: "";
+      position: absolute;
+      right: -42px;
+      top: -58px;
+      width: 150px;
+      height: 150px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(74, 158, 204, 0.24), transparent 66%);
+    }
+
+    .countdown strong {
+      display: block;
+      font-size: clamp(1.7rem, 8vw, 3rem);
+      letter-spacing: -0.06em;
+      line-height: 1;
+    }
+
+    .countdown span,
+    .pending-panel p {
+      color: var(--muted);
+      display: block;
+      margin-top: 6px;
+    }
+
+    .pending-list {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 2px 2px;
+      scrollbar-width: thin;
+    }
+
+    .pending-pill {
+      border: 1px solid rgba(233, 196, 106, 0.36);
+      background: rgba(233, 196, 106, 0.10);
+      color: #ffe29b;
+      border-radius: 999px;
+      padding: 8px 10px;
+      white-space: nowrap;
+      font-size: 0.82rem;
+    }
+
+    .tabs {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      margin: 18px -14px 18px;
+      padding: 10px 14px;
+      background: rgba(7, 16, 24, 0.82);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tab-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      width: min(720px, 100%);
+      margin: 0 auto;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 10px 8px;
+      transition: transform 180ms var(--ease), background 180ms var(--ease), color 180ms var(--ease), border-color 180ms var(--ease);
+    }
+
+    .tab-btn:hover {
+      transform: translateY(-1px);
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #061018;
+      border-color: var(--accent);
+      font-weight: 800;
+    }
+
+    .tab-panel {
+      display: none;
+      animation: reveal 320ms var(--ease);
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 22px 2px 12px;
+    }
+
+    .section-title h2,
+    .section-title h3 {
+      margin: 0;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-title span {
+      color: var(--faint);
+      font-size: 0.84rem;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+    }
+
+    .day-card,
+    .booking-card,
+    .info-card,
+    .expense-card {
+      background: linear-gradient(180deg, rgba(20, 35, 51, 0.92), rgba(12, 24, 34, 0.90));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: 0 12px 32px rgba(0,0,0,.24);
+    }
+
+    .day-card {
+      overflow: hidden;
+      transition: border-color 220ms var(--ease), transform 220ms var(--ease), box-shadow 220ms var(--ease);
+    }
+
+    .day-card.today {
+      border-color: rgba(74, 158, 204, 0.78);
+      box-shadow: 0 18px 46px rgba(74, 158, 204, 0.20), var(--shadow);
+    }
+
+    .day-card.open {
+      transform: translateY(-1px);
+    }
+
+    .day-toggle {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      padding: 16px;
+    }
+
+    .day-head {
+      display: grid;
+      gap: 10px;
+    }
+
+    .day-title-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .day-title {
+      font-weight: 850;
+      letter-spacing: -0.035em;
+      font-size: 1.08rem;
+    }
+
+    .day-location,
+    .day-summary {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .day-summary {
+      margin-top: -3px;
+    }
+
+    .chevron {
+      color: var(--faint);
+      transition: transform 220ms var(--ease);
+      flex: 0 0 auto;
+    }
+
+    .day-card.open .chevron {
+      transform: rotate(180deg);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 0.76rem;
+      color: var(--text);
+      background: rgba(255,255,255,.045);
+      white-space: nowrap;
+    }
+
+    .chip.booked { border-color: rgba(103, 211, 145, .38); background: rgba(103, 211, 145, .12); }
+    .chip.unbooked { border-color: rgba(233, 196, 106, .42); background: rgba(233, 196, 106, .13); color: #ffe29b; }
+    .chip.travel { border-color: rgba(90, 179, 232, .38); background: rgba(90, 179, 232, .13); }
+    .chip.city { border-color: rgba(201, 167, 255, .38); background: rgba(201, 167, 255, .13); }
+    .chip.confirmed { border-color: rgba(103, 211, 145, .38); background: rgba(103, 211, 145, .12); }
+
+    .day-detail {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 360ms var(--ease);
+    }
+
+    .day-detail-inner {
+      padding: 0 16px 16px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .detail-section {
+      background: rgba(255,255,255,.035);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 13px;
+    }
+
+    .detail-section h4 {
+      margin: 0 0 10px;
+      font-size: 0.88rem;
+      letter-spacing: .01em;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .stat,
+    .transport-row,
+    .booking-meta,
+    .balance-row {
+      background: rgba(7, 16, 24, 0.42);
+      border: 1px solid rgba(190, 213, 226, 0.10);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .stat .label,
+    .booking-meta .label {
+      color: var(--faint);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .stat .value,
+    .booking-meta .value {
+      color: var(--text);
+      font-weight: 730;
+      overflow-wrap: anywhere;
+    }
+
+    .route-line {
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .route-line strong {
+      color: var(--text);
+    }
+
+    .transport-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .transport-row {
+      display: grid;
+      gap: 2px;
+    }
+
+    .transport-row strong {
+      font-size: 0.94rem;
+    }
+
+    .transport-row span,
+    .accommodation p,
+    .notes p,
+    .callout p {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .accommodation {
+      display: grid;
+      gap: 9px;
+    }
+
+    .accommodation h5 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .confirmation {
+      font-weight: 850;
+      color: var(--text);
+    }
+
+    .wifi {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      background: rgba(74, 158, 204, 0.10);
+      border: 1px dashed rgba(74, 158, 204, 0.42);
+      border-radius: 12px;
+      padding: 10px;
+    }
+
+    .wifi code,
+    .copyable {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9rem;
+      overflow-wrap: anywhere;
+    }
+
+    .ghost-btn,
+    .primary-btn,
+    .icon-btn {
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      color: var(--text);
+      background: rgba(255,255,255,.05);
+      padding: 9px 12px;
+      transition: background 180ms var(--ease), transform 180ms var(--ease), border-color 180ms var(--ease);
+    }
+
+    .ghost-btn:hover,
+    .icon-btn:hover {
+      background: rgba(255,255,255,.09);
+      transform: translateY(-1px);
+    }
+
+    .primary-btn {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #061018;
+      font-weight: 850;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.06);
+    }
+
+    .callout {
+      border-color: rgba(74, 158, 204, .46);
+      background: linear-gradient(135deg, rgba(74,158,204,.16), rgba(255,255,255,.035));
+    }
+
+    .personal-note {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .personal-note textarea,
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      background: rgba(3, 10, 16, 0.58);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--text);
+      padding: 11px 12px;
+      outline: none;
+    }
+
+    .personal-note textarea:focus,
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: rgba(74, 158, 204, 0.82);
+      box-shadow: 0 0 0 3px rgba(74, 158, 204, 0.12);
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+    }
+
+    .booking-list,
+    .info-grid,
+    .expense-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .booking-card,
+    .info-card,
+    .expense-card {
+      padding: 15px;
+    }
+
+    .booking-card {
+      display: grid;
+      gap: 11px;
+    }
+
+    .booking-card h3,
+    .info-card h3,
+    .expense-card h3 {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: -0.015em;
+    }
+
+    .booking-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .booking-confirmation {
+      font-size: 1.15rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      padding: 10px;
+      border-radius: 13px;
+      background: rgba(74, 158, 204, 0.11);
+      border: 1px solid rgba(74, 158, 204, 0.32);
+    }
+
+    .booking-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .pretrip-list {
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+
+    .pretrip-list li,
+    .contact-row,
+    .expense-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      padding: 10px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .pretrip-list li:first-child,
+    .contact-row:first-child,
+    .expense-row:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .big-number {
+      font-size: 2rem;
+      line-height: 1;
+      letter-spacing: -0.07em;
+      font-weight: 900;
+      margin: 8px 0 4px;
+    }
+
+    .expense-actions {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .balance-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .balance-positive {
+      color: var(--green);
+      font-weight: 850;
+    }
+
+    .balance-negative {
+      color: var(--yellow);
+      font-weight: 850;
+    }
+
+    .settle-list,
+    .expense-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .expense-row {
+      align-items: flex-start;
+    }
+
+    .expense-row strong,
+    .pretrip-list strong {
+      font-weight: 820;
+    }
+
+    .expense-row small,
+    .pretrip-list small {
+      display: block;
+      color: var(--faint);
+      margin-top: 2px;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      display: inline-grid;
+      place-items: center;
+      padding: 0;
+      flex: 0 0 auto;
+    }
+
+    .info-card ul {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    .info-card li + li {
+      margin-top: 7px;
+    }
+
+    .links-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .links-list a {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      background: rgba(255,255,255,.035);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 11px 12px;
+      color: var(--text);
+    }
+
+    .contacts-form {
+      display: grid;
+      gap: 10px;
+      margin-top: 13px;
+    }
+
+    .contact-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: end center;
+      padding: 14px;
+      background: rgba(1, 5, 9, 0.68);
+      backdrop-filter: blur(8px);
+      z-index: 50;
+    }
+
+    .modal.open {
+      display: grid;
+    }
+
+    .modal-card {
+      width: min(520px, 100%);
+      background: #101d29;
+      border: 1px solid var(--line-strong);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      animation: slideUp 260ms var(--ease);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(18px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 13px;
+    }
+
+    .modal-head h3 {
+      margin: 0;
+    }
+
+    .expense-form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 84px;
+      transform: translateX(-50%) translateY(10px);
+      background: #f4f0e8;
+      color: #071018;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms var(--ease), transform 180ms var(--ease);
+      z-index: 60;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .empty-state {
+      color: var(--muted);
+      border: 1px dashed var(--line-strong);
+      border-radius: var(--radius);
+      padding: 18px;
+      text-align: center;
+    }
+
+    @media (min-width: 760px) {
+      .app {
+        padding: 34px 24px 110px;
+      }
+
+      .hero {
+        padding-top: 34px;
+      }
+
+      .trip-pulse {
+        grid-template-columns: 0.85fr 1.15fr;
+      }
+
+      .tabs {
+        margin-left: -24px;
+        margin-right: -24px;
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+
+      .timeline {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+      }
+
+      .day-card.today {
+        grid-column: span 2;
+      }
+
+      .day-toggle,
+      .day-detail-inner {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .day-detail-inner {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .detail-section.wide {
+        grid-column: span 2;
+      }
+
+      .booking-list,
+      .info-grid,
+      .expense-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .info-card.wide,
+      .expense-card.wide {
+        grid-column: span 2;
+      }
+
+      .modal {
+        place-items: center;
+      }
+    }
+
+    @media (min-width: 1040px) {
+      .timeline {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .day-card.today {
+        grid-column: span 3;
+      }
+
+      .day-card.open {
+        grid-column: span 2;
+      }
+
+      .booking-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="hero">
+      <div class="eyebrow">🏔️ Sept 21 – Oct 1, 2026</div>
+      <h1>TMB Trip Tracker</h1>
+      <p>A pocket-sized command center for the Tour du Mont Blanc crew: itinerary, bookings, shared expenses, and the numbers you need when the WiFi is questionable.</p>
+      <div class="trip-pulse">
+        <div class="countdown" id="tripStatus"></div>
+        <div class="pending-panel">
+          <strong>Pending items to button up</strong>
+          <p>Yellow means unbooked or arrange locally. Not a crisis, just worth tracking.</p>
+          <div class="pending-list" id="pendingList"></div>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="Trip sections">
+      <div class="tab-strip">
+        <button class="tab-btn active" type="button" data-tab="timeline">Timeline</button>
+        <button class="tab-btn" type="button" data-tab="bookings">Bookings</button>
+        <button class="tab-btn" type="button" data-tab="expenses">Expenses</button>
+        <button class="tab-btn" type="button" data-tab="info">Info</button>
+      </div>
+    </nav>
+
+    <main>
+      <section class="tab-panel active" id="timelinePanel">
+        <div class="section-title">
+          <h2>Daily Timeline</h2>
+          <span>Tap a card for details</span>
+        </div>
+        <div class="timeline" id="timeline"></div>
+      </section>
+
+      <section class="tab-panel" id="bookingsPanel">
+        <div class="section-title">
+          <h2>Booking Reference</h2>
+          <span id="bookingCount"></span>
+        </div>
+        <div class="filter-row" id="bookingFilters"></div>
+        <div class="booking-list" id="bookingList"></div>
+      </section>
+
+      <section class="tab-panel" id="expensesPanel">
+        <div class="section-title">
+          <h2>Group Expenses</h2>
+          <span>Local to this device</span>
+        </div>
+        <div class="expense-grid">
+          <article class="expense-card">
+            <h3>Pre-trip lodging</h3>
+            <div class="big-number">$500/person</div>
+            <p class="muted">Planning estimate for 4 people. Listed lodging subtotal is tracked here for quick reference.</p>
+            <ul class="pretrip-list" id="pretripList"></ul>
+          </article>
+          <article class="expense-card">
+            <h3>On-trail running split</h3>
+            <div class="big-number" id="expenseTotal">$0.00</div>
+            <p class="muted" id="perPersonTotal">$0.00 per person</p>
+            <div class="expense-actions">
+              <button class="primary-btn" type="button" id="addExpenseBtn">Add expense</button>
+              <button class="ghost-btn" type="button" id="clearExpensesBtn">Clear all</button>
+            </div>
+          </article>
+          <article class="expense-card">
+            <h3>Settle up</h3>
+            <div class="settle-list" id="settleList"></div>
+          </article>
+          <article class="expense-card">
+            <h3>Net balances</h3>
+            <div class="settle-list" id="balanceList"></div>
+          </article>
+          <article class="expense-card wide">
+            <h3>Expense log</h3>
+            <div class="expense-list" id="expenseList"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="infoPanel">
+        <div class="section-title">
+          <h2>Trip Info</h2>
+          <span>Useful offline-ish reference</span>
+        </div>
+        <div class="info-grid">
+          <article class="info-card">
+            <h3>🆘 Emergency Numbers</h3>
+            <ul>
+              <li>France: 112 general, 15 SAMU medical, 17 police, 18 fire</li>
+              <li>Italy: 112 general, 118 medical</li>
+              <li>Switzerland: 112 general, 144 medical, 1414 Rega alpine rescue</li>
+              <li>Mountain Rescue (Alps): 1414</li>
+            </ul>
+          </article>
+          <article class="info-card">
+            <h3>🌤️ Weather Links</h3>
+            <div class="links-list">
+              <a href="https://www.mountain-forecast.com/peaks/Mont-Blanc/forecasts/4808" target="_blank" rel="noopener">Mountain Forecast <span>↗</span></a>
+              <a href="https://www.yr.no/en/forecast/daily-table/2-3028841/France/Auvergne-Rh%C3%B4ne-Alpes/Haute-Savoie/Chamonix-Mont-Blanc" target="_blank" rel="noopener">Yr.no Chamonix <span>↗</span></a>
+              <a href="https://www.meteoblue.com/en/weather/week/chamonix_france_3028841" target="_blank" rel="noopener">MeteoBlue <span>↗</span></a>
+            </div>
+          </article>
+          <article class="info-card">
+            <h3>📱 Useful Apps</h3>
+            <ul>
+              <li>Gaia GPS — navigation</li>
+              <li>AllTrails — route reference</li>
+              <li>Rome2Rio — transport lookup</li>
+              <li>Flixbus — bus booking</li>
+              <li>SNCF Connect — French trains</li>
+              <li>Trenitalia — Italian trains</li>
+            </ul>
+          </article>
+          <article class="info-card">
+            <h3>👥 Group Contact Info</h3>
+            <p class="muted">Edit names and phone numbers here. Saved in localStorage on this device.</p>
+            <div class="contacts-form" id="contactsForm"></div>
+            <button class="primary-btn" type="button" id="saveContactsBtn">Save contacts</button>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="expenseModal" role="dialog" aria-modal="true" aria-labelledby="expenseModalTitle">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="expenseModalTitle">Add trail expense</h3>
+        <button class="icon-btn" type="button" id="closeExpenseBtn" aria-label="Close expense modal">×</button>
+      </div>
+      <form class="expense-form" id="expenseForm">
+        <div class="form-grid">
+          <div class="field">
+            <label for="expenseAmount">Amount</label>
+            <input id="expenseAmount" name="amount" type="number" inputmode="decimal" step="0.01" min="0.01" required placeholder="42.50">
+          </div>
+          <div class="field">
+            <label for="expenseCategory">Category</label>
+            <select id="expenseCategory" name="category">
+              <option>Food</option>
+              <option>Transport</option>
+              <option>Gear</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="expensePayer">Who paid</label>
+          <select id="expensePayer" name="payer"></select>
+        </div>
+        <div class="field">
+          <label for="expenseNote">Note</label>
+          <textarea id="expenseNote" name="note" rows="3" placeholder="Dinner in Courmayeur"></textarea>
+        </div>
+        <button class="primary-btn" type="submit">Save expense</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const STORAGE_KEYS = {
+      expenses: "tmb-expenses-v1",
+      contacts: "tmb-contacts-v1",
+      notes: "tmb-notes-v1"
+    };
+
+    const defaultContacts = [
+      { name: "Traveler 1", phone: "" },
+      { name: "Traveler 2", phone: "" },
+      { name: "Traveler 3", phone: "" },
+      { name: "Traveler 4", phone: "" }
+    ];
+
+    const pendingItems = [
+      "Geneva Airport → Les Houches transfer",
+      "Les Chapieux → Bourg-Saint-Maurice shuttle",
+      "Bourg-Saint-Maurice → Les Chapieux shuttle",
+      "Courmayeur → Arnuva bus",
+      "La Fouly → Champex bus",
+      "Trient → Martigny bus",
+      "Martigny → Col de la Forclaz bus",
+      "Annecy hotel",
+      "Lyon hotel",
+      "Paris hotel"
+    ];
+
+    const tripDays = [
+      {
+        day: 1,
+        date: "2026-09-21",
+        dateLabel: "Sept 21",
+        weekday: "Sunday",
+        type: "Travel",
+        title: "LAX → Geneva",
+        location: "Overnight flight",
+        summary: "Flight LAX → Geneva",
+        status: "travel",
+        notes: ["Overnight flight. Land Geneva morning of Sept 22."],
+        transfers: [
+          { mode: "✈️ Flight", route: "LAX → Geneva", duration: "Overnight", depart: "6:00 PM", status: "booked" }
+        ],
+        accommodation: null,
+        booking: {
+          category: "✈️ Flight",
+          name: "Delta flight LAX → Geneva",
+          confirmation: "GJL99G",
+          dates: "Sept 21–22, 2026",
+          price: "Not listed",
+          status: "🟢 Booked"
+        }
+      },
+      {
+        day: 2,
+        date: "2026-09-22",
+        dateLabel: "Sept 22",
+        weekday: "Monday",
+        type: "Arrival / Rest Day",
+        title: "Geneva → Les Houches",
+        location: "Les Houches, France 🇫🇷",
+        summary: "Arrive Geneva, transfer to Les Houches. Settle in, explore the village.",
+        status: "booked",
+        transfers: [
+          { mode: "🚐 Shuttle / train", route: "Geneva Airport → Les Houches", duration: "~1.5 hrs", depart: "Arrange on arrival or pre-book separately", status: "unbooked" }
+        ],
+        accommodation: {
+          name: "Hotel Restaurant Le Saint Antoine",
+          confirmation: "Expedia Itinerary #73387542728437",
+          price: "$151.49 (Quadruple room)",
+          cancellation: "Can cancel until September",
+          status: "🟢 Booked"
+        },
+        notes: ["Grocery stop, confirm first day's route, early dinner, early bed."]
+      },
+      {
+        day: 3,
+        date: "2026-09-23",
+        dateLabel: "Sept 23",
+        weekday: "Tuesday",
+        type: "Hiking Day 1",
+        title: "Les Houches → Les Contamines",
+        location: "Les Houches 🇫🇷 to Les Contamines",
+        summary: "Big first hiking day over Col du Tricot with suspension bridge and refuge views.",
+        status: "booked",
+        hiking: {
+          route: "Les Houches → Bellevue → Col de Voza → Bionnassay bridge → Col du Tricot → Les Contamines",
+          start: "~8:00 AM",
+          arrival: "2:00–3:00 PM",
+          distance: "10 mi / 16 km",
+          elevation: "↑ ~4,300 ft / ↓ ~4,600 ft",
+          time: "5.5–7 hrs"
+        },
+        accommodation: {
+          name: "Gîte Le Pontet",
+          confirmation: "#8386849 (montourdumontblanc.com)",
+          price: "$316.05",
+          status: "🟢 Booked",
+          url: "https://www.montourdumontblanc.com/en/choix-etape-suivante/20260924"
+        },
+        notes: [
+          "Highlights: Passerelle de Bionnassay suspension bridge, glacial lake views, Refuge de Miage, Auberge Le Truc (1,750m).",
+          "Option: Cable car from Les Houches to Bellevue (~10 min) skips initial climb."
+        ]
+      },
+      {
+        day: 4,
+        date: "2026-09-24",
+        dateLabel: "Sept 24",
+        weekday: "Wednesday",
+        type: "Hiking + Transfer",
+        title: "Les Contamines → Bourg-Saint-Maurice",
+        location: "Les Contamines to Bourg-Saint-Maurice via Les Chapieux",
+        summary: "Climb to Col du Bonhomme, descend to Les Chapieux, then shuttle/taxi to Bourg-Saint-Maurice.",
+        status: "booked",
+        hiking: {
+          route: "Les Contamines → Notre Dame de la Gorge → Col du Bonhomme → Col de la Croix du Bonhomme → Les Chapieux",
+          start: "~7:30 AM",
+          arrival: "Les Chapieux ~3:30 PM",
+          distance: "12 mi / 19 km",
+          elevation: "↑ ~4,800 ft / ↓ ~3,000 ft",
+          time: "7–8 hrs"
+        },
+        transfers: [
+          { mode: "🚕 Taxi / shuttle", route: "Les Chapieux → Bourg-Saint-Maurice", duration: "~40 min", depart: "After hike, arrange locally", status: "unbooked" }
+        ],
+        accommodation: {
+          name: "Hostellerie du Petit Saint Bernard",
+          confirmation: "Expedia Itinerary #73388458274023",
+          price: "$255.72",
+          checkIn: "Thu Sept 24, 4:00 PM",
+          checkOut: "Fri Sept 25, 11:00 AM",
+          status: "🟢 Booked"
+        }
+      },
+      {
+        day: 5,
+        date: "2026-09-25",
+        dateLabel: "Sept 25",
+        weekday: "Thursday",
+        type: "Hiking + Transfer",
+        title: "Bourg-Saint-Maurice → Courmayeur",
+        location: "Bourg-Saint-Maurice to Courmayeur, Italy 🇮🇹",
+        summary: "Return to Les Chapieux, cross Col de la Seigne, and descend into Courmayeur.",
+        status: "booked",
+        hiking: {
+          route: "Les Chapieux → Refuge des Mottets → Col de la Seigne → Val Veny → Courmayeur",
+          start: "~8:30 AM",
+          arrival: "4:30–6:00 PM",
+          distance: "15 mi / 24 km",
+          elevation: "↑ ~3,900 ft / ↓ ~5,400 ft",
+          time: "7–9 hrs"
+        },
+        transfers: [
+          { mode: "🚐 Transport", route: "Bourg-Saint-Maurice → Les Chapieux", duration: "~40 min", depart: "7:30 AM, arrange locally", status: "unbooked" }
+        ],
+        accommodation: {
+          name: "IH Hotels Courmayeur",
+          confirmation: "RES #1053549590",
+          price: "$250.70",
+          rate: "Flexible rate with breakfast",
+          status: "🟢 Booked"
+        },
+        border: "🇫🇷 → 🇮🇹 Crossing into Italy today at Col de la Seigne"
+      },
+      {
+        day: 6,
+        date: "2026-09-26",
+        dateLabel: "Sept 26",
+        weekday: "Friday",
+        type: "Hiking + Transfer",
+        title: "Courmayeur → Champex",
+        location: "Courmayeur to Champex, Switzerland 🇨🇭",
+        summary: "Bus to Arnuva, hike over Grand Col Ferret, then bus from La Fouly to Champex.",
+        status: "booked",
+        hiking: {
+          route: "Arnuva → Grand Col Ferret → La Fouly",
+          start: "~8:30 AM",
+          arrival: "La Fouly ~2:30 PM",
+          distance: "10 mi / 16 km",
+          elevation: "↑ ~2,900 ft / ↓ ~3,600 ft",
+          time: "5–6 hrs"
+        },
+        transfers: [
+          { mode: "🚌 Bus", route: "Courmayeur → Arnuva", duration: "~30 min", depart: "8:00 AM", status: "unbooked" },
+          { mode: "🚌 Bus", route: "La Fouly → Champex", duration: "~25 min", depart: "Afternoon", status: "unbooked" }
+        ],
+        accommodation: {
+          name: "Pension En Plein Air",
+          confirmation: "Res No. 4857553",
+          price: "$437.66",
+          status: "🟢 Booked"
+        },
+        border: "🇮🇹 → 🇨🇭 Crossing into Switzerland today at Grand Col Ferret"
+      },
+      {
+        day: 7,
+        date: "2026-09-27",
+        dateLabel: "Sept 27",
+        weekday: "Saturday",
+        type: "Hiking + Transfer",
+        title: "Champex → Martigny",
+        location: "Champex 🇨🇭 to Martigny, Switzerland 🇨🇭",
+        summary: "Bovine route to Trient, with a harder Fenêtre d'Arpette option if weather cooperates.",
+        status: "booked",
+        hiking: {
+          route: "Champex → Alp Bovine → Trient",
+          start: "~8:30 AM",
+          arrival: "Trient ~2:00 PM",
+          distance: "9 mi / 14 km",
+          elevation: "↑ ~2,700 ft / ↓ ~3,600 ft",
+          time: "4–6 hrs"
+        },
+        transfers: [
+          { mode: "🚌 Bus", route: "Trient → Martigny", duration: "~25 min", depart: "After hike", status: "unbooked" }
+        ],
+        accommodation: {
+          name: "Hotel De La Poste",
+          confirmation: "Direct with hotel (27.09.2026 – 28.09.2026)",
+          price: "220 CHF / $283.34 USD (2 twin rooms × 1 night)",
+          status: "🟢 Confirmed",
+          wifi: { network: "hoteldelaposte_client", password: "Martigny1920#" }
+        },
+        notes: ["Variant note: Alternative route via Fenêtre d'Arpette (harder, more dramatic, weather dependent — decision to make morning of)."]
+      },
+      {
+        day: 8,
+        date: "2026-09-28",
+        dateLabel: "Sept 28",
+        weekday: "Sunday",
+        type: "Hiking + Transfer",
+        title: "Martigny → Chamonix",
+        location: "Martigny to Chamonix, France 🇫🇷",
+        summary: "Bus to Col de la Forclaz, hike over Col de Balme, train from Vallorcine to Chamonix.",
+        status: "booked",
+        hiking: {
+          route: "Col de la Forclaz → Col de Balme → Vallorcine",
+          start: "~9:00 AM",
+          arrival: "Afternoon",
+          distance: "10 mi / 16 km",
+          elevation: "↑ ~3,200 ft / ↓ ~3,400 ft",
+          time: "5–6 hrs"
+        },
+        transfers: [
+          { mode: "🚌 Bus", route: "Martigny → Col de la Forclaz", duration: "~25 min", depart: "Morning", status: "unbooked" },
+          { mode: "🚆 Train", route: "Vallorcine → Chamonix", duration: "~35 min", depart: "After hike", status: "unbooked" }
+        ],
+        accommodation: {
+          name: "Hôtel de l'Arve",
+          confirmation: "#34783",
+          price: "€239.80 / $278.73 USD",
+          checkIn: "28.09.2026",
+          checkOut: "29.09.2026",
+          room: "Chambre familiale (4 adults)",
+          includes: "Breakfast (petit-déjeuner)",
+          status: "🟢 Booked"
+        },
+        border: "🇨🇭 → 🇫🇷 Back to France today at Col de Balme"
+      },
+      {
+        day: 9,
+        date: "2026-09-29",
+        dateLabel: "Sept 29",
+        weekday: "Monday",
+        type: "City Day",
+        title: "Chamonix → Annecy",
+        location: "Annecy, France 🇫🇷",
+        summary: "Relaxed morning in Chamonix, then bus to Annecy for canals, lake, and Savoyard dinner.",
+        status: "city",
+        transfers: [
+          { mode: "🚌 Bus", route: "Chamonix Sud Bus Station → Annecy via FlixBus or BlaBlaCar Bus", duration: "~1h 30–45m, no transfer", depart: "~10:00 AM → ~11:40 AM", status: "unbooked" }
+        ],
+        accommodation: {
+          name: "Not booked",
+          confirmation: "Not listed",
+          price: "TBD",
+          status: "🟡 Unbooked"
+        },
+        notes: ["Vieille Ville canals, Lake Annecy promenade, cafés. Dinner: raclette or tartiflette, Savoy wines (Apremont or Mondeuse)."]
+      },
+      {
+        day: 10,
+        date: "2026-09-30",
+        dateLabel: "Sept 30",
+        weekday: "Tuesday",
+        type: "City Day",
+        title: "Annecy → Lyon",
+        location: "Lyon, France 🇫🇷",
+        summary: "TER train to Lyon, then old-town wandering and a classic bouchon dinner.",
+        status: "city",
+        transfers: [
+          { mode: "🚆 Train", route: "Annecy → Lyon Part-Dieu (TER regional, no reservation required)", duration: "~1h 55m", depart: "~10:43 AM → ~12:42 PM", status: "unbooked" }
+        ],
+        accommodation: {
+          name: "Not booked",
+          confirmation: "Not listed",
+          price: "TBD",
+          status: "🟡 Unbooked"
+        },
+        notes: ["Vieux Lyon, Presqu'île, Croix-Rousse wine bars. Classic bouchon dinner: quenelles, coq au vin, Beaujolais."]
+      },
+      {
+        day: 11,
+        date: "2026-10-01",
+        dateLabel: "Oct 1",
+        weekday: "Wednesday",
+        type: "Travel Day",
+        title: "Lyon → Paris",
+        location: "Paris, France 🇫🇷",
+        summary: "TGV from Lyon Part-Dieu to Paris Gare de Lyon, then quick access to central neighborhoods.",
+        status: "travel",
+        transfers: [
+          { mode: "🚆 Train", route: "Lyon Part-Dieu → Paris Gare de Lyon (TGV, reservations recommended)", duration: "~1h 55m", depart: "Option A 09:04 → 11:00; Option B 10:04 → 12:00", status: "unbooked" }
+        ],
+        accommodation: {
+          name: "Not booked",
+          confirmation: "Not listed",
+          price: "TBD",
+          status: "🟡 Unbooked"
+        },
+        notes: ["From Gare de Lyon: ~10 min to Marais, ~15 min to Latin Quarter, ~20 min to Saint-Germain."]
+      }
+    ];
+
+    const bookingFilters = ["All", "✈️ Flight", "🏨 Lodging", "🚌 Transport"];
+    let activeBookingFilter = "All";
+    let contacts = loadJson(STORAGE_KEYS.contacts, defaultContacts);
+    let expenses = loadJson(STORAGE_KEYS.expenses, []);
+    let personalNotes = loadJson(STORAGE_KEYS.notes, {});
+
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+
+    function loadJson(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function saveJson(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function formatMoney(value) {
+      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value || 0);
+    }
+
+    function statusChip(status) {
+      const map = {
+        booked: ["🟢 Booked", "booked"],
+        unbooked: ["🟡 Unbooked", "unbooked"],
+        travel: ["🔵 Travel Day", "travel"],
+        city: ["🏙️ City Day", "city"],
+        confirmed: ["🟢 Confirmed", "confirmed"]
+      };
+      const [label, cls] = map[status] || [status, ""];
+      return `<span class="chip ${cls}">${label}</span>`;
+    }
+
+    function accommodationStatusClass(statusText = "") {
+      if (statusText.includes("Unbooked")) return "unbooked";
+      if (statusText.includes("Confirmed")) return "confirmed";
+      return "booked";
+    }
+
+    function todayKey() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function daysBetween(start, end) {
+      const oneDay = 1000 * 60 * 60 * 24;
+      const startDate = new Date(`${start}T00:00:00`);
+      const endDate = new Date(`${end}T00:00:00`);
+      return Math.ceil((endDate - startDate) / oneDay);
+    }
+
+    function renderTripStatus() {
+      const today = todayKey();
+      const first = tripDays[0].date;
+      const last = tripDays[tripDays.length - 1].date;
+      const status = $("#tripStatus");
+      if (today < first) {
+        const count = daysBetween(today, first);
+        status.innerHTML = `<strong>${count} days</strong><span>until wheels up for Geneva.</span>`;
+      } else if (today > last) {
+        status.innerHTML = `<strong>Trip complete</strong><span>Summary mode: bookings, notes, and expenses are still here for reference.</span>`;
+      } else {
+        const day = tripDays.find((item) => item.date === today);
+        status.innerHTML = `<strong>${day ? `Today: Day ${day.day}` : "On trip"}</strong><span>${day ? `${day.dateLabel} · ${day.title}` : "Between listed trip dates."}</span>`;
+      }
+    }
+
+    function renderPendingItems() {
+      $("#pendingList").innerHTML = pendingItems.map((item) => `<span class="pending-pill">${item}</span>`).join("");
+    }
+
+    function renderTimeline() {
+      const today = todayKey();
+      const isWithinTrip = today >= tripDays[0].date && today <= tripDays[tripDays.length - 1].date;
+      const activeDay = isWithinTrip ? tripDays.find((day) => day.date === today) : null;
+      $("#timeline").innerHTML = tripDays.map((day) => {
+        const isToday = activeDay && activeDay.day === day.day;
+        const isOpen = isToday;
+        return `
+          <article class="day-card ${isToday ? "today" : ""} ${isOpen ? "open" : ""}" id="day-${day.day}" data-day="${day.day}">
+            <button class="day-toggle" type="button" aria-expanded="${isOpen}">
+              <div class="day-head">
+                <div class="day-title-line">
+                  <div>
+                    <div class="day-title">Day ${day.day} · ${day.dateLabel} · ${day.title}</div>
+                    <div class="day-location">${day.location}</div>
+                  </div>
+                  <span class="chevron">⌄</span>
+                </div>
+                <div class="chip-row">${statusChip(day.status)} <span class="chip">${day.type}</span></div>
+                <div class="day-summary">${day.summary}</div>
+              </div>
+            </button>
+            <div class="day-detail" aria-hidden="${!isOpen}">
+              <div class="day-detail-inner">
+                ${renderDayDetail(day)}
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      $$(".day-card").forEach((card) => {
+        const toggle = card.querySelector(".day-toggle");
+        const detail = card.querySelector(".day-detail");
+        setDetailState(card, card.classList.contains("open"));
+        toggle.addEventListener("click", () => toggleDayCard(card));
+      });
+
+      $$(".personal-note textarea").forEach((textarea) => {
+        textarea.addEventListener("input", (event) => {
+          personalNotes[event.target.dataset.day] = event.target.value;
+          saveJson(STORAGE_KEYS.notes, personalNotes);
+        });
+      });
+
+      $$(".wifi button").forEach((button) => {
+        button.addEventListener("click", () => {
+          const wrap = button.closest(".wifi");
+          const hidden = wrap.dataset.revealed !== "true";
+          wrap.dataset.revealed = String(hidden);
+          wrap.querySelector("code").textContent = hidden ? wrap.dataset.secret : "Tap to reveal";
+          button.textContent = hidden ? "Hide" : "Reveal";
+        });
+      });
+
+      if (activeDay) {
+        setTimeout(() => document.getElementById(`day-${activeDay.day}`)?.scrollIntoView({ block: "center" }), 150);
+      }
+    }
+
+    function renderDayDetail(day) {
+      return [
+        day.hiking ? renderHiking(day.hiking) : "",
+        day.transfers?.length ? renderTransfers(day.transfers) : "",
+        day.accommodation ? renderAccommodation(day.accommodation) : "",
+        day.border ? `<section class="detail-section callout wide"><h4>🗺️ Country</h4><p>${day.border}</p></section>` : "",
+        day.notes?.length ? renderNotes(day) : renderPersonalNote(day)
+      ].join("");
+    }
+
+    function renderHiking(hiking) {
+      return `
+        <section class="detail-section wide">
+          <h4>🥾 Hiking Stats</h4>
+          <div class="route-line"><strong>Route:</strong> ${hiking.route}</div>
+          <div class="stat-grid">
+            <div class="stat"><span class="label">Start</span><span class="value">${hiking.start}</span></div>
+            <div class="stat"><span class="label">Arrival</span><span class="value">${hiking.arrival}</span></div>
+            <div class="stat"><span class="label">Distance</span><span class="value">${hiking.distance}</span></div>
+            <div class="stat"><span class="label">Elevation</span><span class="value">${hiking.elevation}</span></div>
+            <div class="stat"><span class="label">Hiking time</span><span class="value">${hiking.time}</span></div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderTransfers(transfers) {
+      return `
+        <section class="detail-section">
+          <h4>🚌 Transfers</h4>
+          <div class="transport-list">
+            ${transfers.map((leg) => `
+              <div class="transport-row">
+                <strong>${leg.mode} · ${leg.route}</strong>
+                <span>${leg.duration} · ${leg.depart}</span>
+                ${leg.status === "unbooked" ? statusChip("unbooked") : statusChip("booked")}
+              </div>
+            `).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderAccommodation(accommodation) {
+      const statusClass = accommodationStatusClass(accommodation.status);
+      const wifiSecret = accommodation.wifi ? `${accommodation.wifi.network} / ${accommodation.wifi.password}` : "";
+      return `
+        <section class="detail-section accommodation">
+          <h4>🏨 Accommodation</h4>
+          <h5>${accommodation.name}</h5>
+          <p>Confirmation: <span class="confirmation">${accommodation.confirmation}</span></p>
+          <p>Price: ${accommodation.price}</p>
+          ${accommodation.checkIn ? `<p>Check-in: ${accommodation.checkIn}</p>` : ""}
+          ${accommodation.checkOut ? `<p>Check-out: ${accommodation.checkOut}</p>` : ""}
+          ${accommodation.cancellation ? `<p>Cancellation: ${accommodation.cancellation}</p>` : ""}
+          ${accommodation.rate ? `<p>Rate: ${accommodation.rate}</p>` : ""}
+          ${accommodation.room ? `<p>Room: ${accommodation.room}</p>` : ""}
+          ${accommodation.includes ? `<p>Includes: ${accommodation.includes}</p>` : ""}
+          ${accommodation.url ? `<p><a href="${accommodation.url}" target="_blank" rel="noopener">Booking link ↗</a></p>` : ""}
+          ${accommodation.wifi ? `<div class="wifi" data-secret="${wifiSecret}"><code>Tap to reveal</code><button class="ghost-btn" type="button">Reveal</button></div>` : ""}
+          <span class="chip ${statusClass}">${accommodation.status}</span>
+        </section>
+      `;
+    }
+
+    function renderNotes(day) {
+      return `
+        <section class="detail-section notes wide">
+          <h4>📝 Notes</h4>
+          ${day.notes.map((note) => `<p>${note}</p>`).join("")}
+          ${renderPersonalNote(day)}
+        </section>
+      `;
+    }
+
+    function renderPersonalNote(day) {
+      const value = personalNotes[day.day] || "";
+      return `
+        <div class="personal-note">
+          <label class="muted" for="note-${day.day}">Personal note</label>
+          <textarea id="note-${day.day}" data-day="${day.day}" rows="3" placeholder="Add your own reminder for this day...">${value}</textarea>
+        </div>
+      `;
+    }
+
+    function toggleDayCard(card) {
+      const toggle = card.querySelector(".day-toggle");
+      const isOpen = card.classList.toggle("open");
+      toggle.setAttribute("aria-expanded", String(isOpen));
+      setDetailState(card, isOpen);
+    }
+
+    function setDetailState(card, isOpen) {
+      const detail = card.querySelector(".day-detail");
+      detail.style.maxHeight = isOpen ? `${detail.scrollHeight}px` : "0px";
+      detail.setAttribute("aria-hidden", String(!isOpen));
+      detail.inert = !isOpen;
+    }
+
+    function allBookings() {
+      const bookings = [];
+      tripDays.forEach((day) => {
+        if (day.booking) bookings.push({ ...day.booking, day: day.day });
+        if (day.accommodation) {
+          bookings.push({
+            category: "🏨 Lodging",
+            name: day.accommodation.name,
+            confirmation: day.accommodation.confirmation,
+            dates: `${day.dateLabel}, 2026`,
+            price: day.accommodation.price,
+            status: day.accommodation.status,
+            cancellation: day.accommodation.cancellation,
+            day: day.day
+          });
+        }
+        day.transfers?.forEach((leg) => {
+          if (leg.status === "unbooked") {
+            bookings.push({
+              category: "🚌 Transport",
+              name: leg.route,
+              confirmation: "Not booked",
+              dates: `${day.dateLabel}, 2026`,
+              price: "TBD",
+              status: "🟡 Unbooked",
+              cancellation: "",
+              day: day.day
+            });
+          }
+        });
+      });
+      return bookings;
+    }
+
+    function renderBookingFilters() {
+      $("#bookingFilters").innerHTML = bookingFilters.map((filter) => `
+        <button class="ghost-btn ${filter === activeBookingFilter ? "active" : ""}" type="button" data-filter="${filter}">${filter}</button>
+      `).join("");
+      $$("#bookingFilters button").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeBookingFilter = button.dataset.filter;
+          renderBookingFilters();
+          renderBookings();
+        });
+      });
+    }
+
+    function renderBookings() {
+      const bookings = allBookings().filter((booking) => activeBookingFilter === "All" || booking.category === activeBookingFilter);
+      $("#bookingCount").textContent = `${bookings.length} items`;
+      $("#bookingList").innerHTML = bookings.map((booking) => {
+        const statusClass = accommodationStatusClass(booking.status);
+        return `
+          <article class="booking-card">
+            <div class="booking-top">
+              <div>
+                <span class="chip">${booking.category}</span>
+                <h3>${booking.name}</h3>
+              </div>
+              <span class="chip ${statusClass}">${booking.status}</span>
+            </div>
+            <button class="booking-confirmation copyable" type="button" data-copy="${booking.confirmation}" title="Tap to copy">${booking.confirmation}</button>
+            <div class="booking-meta-grid">
+              <div class="booking-meta"><span class="label">Date(s)</span><span class="value">${booking.dates}</span></div>
+              <div class="booking-meta"><span class="label">Price</span><span class="value">${booking.price}</span></div>
+              <div class="booking-meta"><span class="label">Day</span><span class="value">Day ${booking.day}</span></div>
+              <div class="booking-meta"><span class="label">Cancellation</span><span class="value">${booking.cancellation || "Not noted"}</span></div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      $$(".copyable").forEach((button) => {
+        button.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(button.dataset.copy);
+            showToast("Copied");
+          } catch {
+            showToast("Copy unavailable");
+          }
+        });
+      });
+    }
+
+    function renderPretripLodging() {
+      const lodgings = tripDays
+        .filter((day) => day.accommodation && day.accommodation.name !== "Not booked")
+        .map((day) => ({ day, accommodation: day.accommodation }));
+      $("#pretripList").innerHTML = lodgings.map(({ day, accommodation }) => `
+        <li>
+          <span><strong>${accommodation.name}</strong><small>Day ${day.day} · ${day.dateLabel}</small></span>
+          <span>${accommodation.price}</span>
+        </li>
+      `).join("");
+    }
+
+    function renderExpenses() {
+      const names = contactNames();
+      const total = expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
+      const share = names.length ? total / names.length : 0;
+      const paidBy = Object.fromEntries(names.map((name) => [name, 0]));
+      expenses.forEach((expense) => {
+        paidBy[expense.payer] = (paidBy[expense.payer] || 0) + Number(expense.amount);
+      });
+      const balances = names.map((name) => ({
+        name,
+        balance: (paidBy[name] || 0) - share
+      }));
+
+      $("#expenseTotal").textContent = formatMoney(total);
+      $("#perPersonTotal").textContent = `${formatMoney(share)} per person`;
+      $("#balanceList").innerHTML = balances.map((item) => `
+        <div class="balance-row">
+          <span>${item.name}</span>
+          <span class="${item.balance >= 0 ? "balance-positive" : "balance-negative"}">${item.balance >= 0 ? "+" : ""}${formatMoney(item.balance)}</span>
+        </div>
+      `).join("") || `<div class="empty-state">Add contacts first.</div>`;
+
+      $("#settleList").innerHTML = settleUp(balances).map((line) => `
+        <div class="balance-row"><span>${line.from} pays ${line.to}</span><strong>${formatMoney(line.amount)}</strong></div>
+      `).join("") || `<div class="empty-state">Nothing to settle yet.</div>`;
+
+      $("#expenseList").innerHTML = expenses.length ? expenses.map((expense) => `
+        <div class="expense-row">
+          <span>
+            <strong>${formatMoney(Number(expense.amount))} · ${expense.category}</strong>
+            <small>${expense.payer} paid${expense.note ? ` · ${expense.note}` : ""}</small>
+          </span>
+          <button class="icon-btn" type="button" data-delete-expense="${expense.id}" aria-label="Delete expense">×</button>
+        </div>
+      `).join("") : `<div class="empty-state">No on-trail expenses logged yet.</div>`;
+
+      $$("[data-delete-expense]").forEach((button) => {
+        button.addEventListener("click", () => {
+          expenses = expenses.filter((expense) => expense.id !== button.dataset.deleteExpense);
+          saveJson(STORAGE_KEYS.expenses, expenses);
+          renderExpenses();
+        });
+      });
+    }
+
+    function settleUp(balances) {
+      const debtors = balances.filter((item) => item.balance < -0.005).map((item) => ({ ...item, balance: Math.abs(item.balance) }));
+      const creditors = balances.filter((item) => item.balance > 0.005).map((item) => ({ ...item }));
+      const settlements = [];
+      let d = 0;
+      let c = 0;
+      while (d < debtors.length && c < creditors.length) {
+        const amount = Math.min(debtors[d].balance, creditors[c].balance);
+        settlements.push({ from: debtors[d].name, to: creditors[c].name, amount });
+        debtors[d].balance -= amount;
+        creditors[c].balance -= amount;
+        if (debtors[d].balance < 0.005) d++;
+        if (creditors[c].balance < 0.005) c++;
+      }
+      return settlements;
+    }
+
+    function renderContacts() {
+      $("#contactsForm").innerHTML = contacts.map((contact, index) => `
+        <div class="contact-inputs">
+          <div class="field">
+            <label for="contact-name-${index}">Name</label>
+            <input id="contact-name-${index}" value="${contact.name}" data-contact-name="${index}" placeholder="Name">
+          </div>
+          <div class="field">
+            <label for="contact-phone-${index}">Phone</label>
+            <input id="contact-phone-${index}" value="${contact.phone}" data-contact-phone="${index}" placeholder="+1 ...">
+          </div>
+        </div>
+      `).join("");
+      renderExpensePayerOptions();
+    }
+
+    function saveContacts() {
+      contacts = contacts.map((contact, index) => ({
+        name: $(`[data-contact-name="${index}"]`).value.trim() || `Traveler ${index + 1}`,
+        phone: $(`[data-contact-phone="${index}"]`).value.trim()
+      }));
+      saveJson(STORAGE_KEYS.contacts, contacts);
+      renderContacts();
+      renderExpenses();
+      showToast("Contacts saved");
+    }
+
+    function contactNames() {
+      return contacts.map((contact) => contact.name.trim()).filter(Boolean);
+    }
+
+    function renderExpensePayerOptions() {
+      $("#expensePayer").innerHTML = contactNames().map((name) => `<option>${name}</option>`).join("");
+    }
+
+    function setupExpensesModal() {
+      const modal = $("#expenseModal");
+      $("#addExpenseBtn").addEventListener("click", () => {
+        renderExpensePayerOptions();
+        modal.classList.add("open");
+        $("#expenseAmount").focus();
+      });
+      $("#closeExpenseBtn").addEventListener("click", () => modal.classList.remove("open"));
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) modal.classList.remove("open");
+      });
+      $("#expenseForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        expenses.unshift({
+          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+          amount: Number(form.get("amount")),
+          category: form.get("category"),
+          payer: form.get("payer"),
+          note: String(form.get("note") || "").trim(),
+          createdAt: new Date().toISOString()
+        });
+        saveJson(STORAGE_KEYS.expenses, expenses);
+        event.currentTarget.reset();
+        modal.classList.remove("open");
+        renderExpenses();
+        showToast("Expense added");
+      });
+      $("#clearExpensesBtn").addEventListener("click", () => {
+        if (!expenses.length || !confirm("Clear all saved expenses on this device?")) return;
+        expenses = [];
+        saveJson(STORAGE_KEYS.expenses, expenses);
+        renderExpenses();
+      });
+    }
+
+    function setupTabs() {
+      $$(".tab-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          const tab = button.dataset.tab;
+          $$(".tab-btn").forEach((item) => item.classList.toggle("active", item === button));
+          $$(".tab-panel").forEach((panel) => panel.classList.toggle("active", panel.id === `${tab}Panel`));
+        });
+      });
+    }
+
+    function showToast(message) {
+      const toast = $("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 1400);
+    }
+
+    function init() {
+      renderTripStatus();
+      renderPendingItems();
+      renderTimeline();
+      renderBookingFilters();
+      renderBookings();
+      renderPretripLodging();
+      renderContacts();
+      renderExpenses();
+      setupExpensesModal();
+      setupTabs();
+      $("#saveContactsBtn").addEventListener("click", saveContacts);
+    }
+
+    init();
+  </script>
+</body>
+</html>
