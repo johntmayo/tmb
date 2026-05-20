@@ -1,42 +1,66 @@
 ---
 name: frontend-design
-description: Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, or applications. Generates creative, polished code that avoids generic AI aesthetics.
+description: Create distinctive, production-grade mobile-first frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, or applications, especially responsive travel, editorial, dashboard, booking, or image-led experiences. Generates creative, polished code that avoids generic AI aesthetics.
 license: Complete terms in LICENSE.txt
 ---
 
-This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
+This skill guides creation of distinctive, production-grade frontend interfaces that are designed mobile-first and then progressively enhanced for larger screens. Implement real working code with exceptional attention to aesthetic details, interaction quality, and responsive behavior.
 
 The user provides frontend requirements: a component, page, application, or interface to build. They may include context about the purpose, audience, or technical constraints.
 
-## Design Thinking
+## Mobile-First Design Thinking
 
-Before coding, understand the context and commit to a BOLD aesthetic direction:
+Before coding, understand the context and commit to a focused aesthetic direction that works at phone scale first:
 - **Purpose**: What problem does this interface solve? Who uses it?
-- **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. There are so many flavors to choose from. Use these for inspiration but design one that is true to the aesthetic direction.
-- **Constraints**: Technical requirements (framework, performance, accessibility).
-- **Differentiation**: What makes this UNFORGETTABLE? What's the one thing someone will remember?
+- **Core mobile action**: What must be reachable with one thumb? What belongs above the fold on a 360-430px wide screen?
+- **Tone**: Pick a clear point of view: alpine editorial, field-guide utility, luxury lodge, rugged expedition, quiet cartography, playful travel scrapbook, brutalist transport board, refined itinerary wallet, etc.
+- **Constraints**: Framework, performance, accessibility, touch targets, image weight, offline or slow-network concerns.
+- **Differentiation**: What is the one memorable mobile moment: a cinematic hero crop, map-card stack, sticky trip status, tactile itinerary cards, or image-led route reveal?
 
-**CRITICAL**: Choose a clear conceptual direction and execute it with precision. Bold maximalism and refined minimalism both work - the key is intentionality, not intensity.
+**CRITICAL**: Design the narrow viewport first. Desktop layouts should feel like the mobile concept has more room to breathe, not like a separate design pasted on later.
 
 Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
 - Production-grade and functional
 - Visually striking and memorable
 - Cohesive with a clear aesthetic point-of-view
-- Meticulously refined in every detail
+- Meticulously refined across mobile, tablet, and desktop
+
+## Visual Direction
+
+If `resources/images` exists, inspect it before designing. For this skill's bundled assets, use the alpine travel imagery as reference material:
+- `resources/images/mountains1.jpg`, `mountains2.jpg`, and `The-view-of-the-Mont-Blanc-scaled.jpg` suggest sweeping mountain scale, crisp daylight, glacier blues, pine greens, stone grays, and high-contrast ridgelines.
+- `resources/images/hovel.jpg` and `window.jpg` suggest rustic shelter, weathered stone, quiet interior framing, and a sense of arrival.
+- `resources/images/signs.jpg` suggests wayfinding, trail metadata, badges, labels, arrows, and practical field-guide UI.
+
+Use images intentionally on mobile:
+- Prefer strong portrait crops, edge-to-edge cards, and layered captions over tiny thumbnails.
+- Use `object-fit`, `aspect-ratio`, responsive `srcset` when available, lazy loading, and compressed formats.
+- Preserve legibility with scrims, gradients, or solid caption panels instead of placing text directly on busy mountain detail.
+
+## Mobile-First Implementation
+
+Build from the smallest useful viewport upward:
+- Start with the mobile layout before writing desktop media queries.
+- Use a single-column information hierarchy, sticky primary actions only when they earn their screen space, and bottom-reachable controls for frequent actions.
+- Keep tap targets at least 44px, with enough spacing for thumbs and winter-glove imprecision when the interface is travel or outdoor oriented.
+- Make cards, accordions, carousels, and filters work without hover. Hover states can enhance desktop but must not hide essential mobile behavior.
+- Use fluid type and spacing with `clamp()`, CSS variables, and container-aware layouts where practical.
+- Add breakpoints only when the design needs them, commonly around compact phone, large phone, tablet, and desktop widths.
+- On wider screens, progressively enhance into split views, editorial grids, side panels, or map/detail layouts without changing the core task flow.
 
 ## Frontend Aesthetics Guidelines
 
 Focus on:
-- **Typography**: Choose fonts that are beautiful, unique, and interesting. Avoid generic fonts like Arial and Inter; opt instead for distinctive choices that elevate the frontend's aesthetics; unexpected, characterful font choices. Pair a distinctive display font with a refined body font.
-- **Color & Theme**: Commit to a cohesive aesthetic. Use CSS variables for consistency. Dominant colors with sharp accents outperform timid, evenly-distributed palettes.
-- **Motion**: Use animations for effects and micro-interactions. Prioritize CSS-only solutions for HTML. Use Motion library for React when available. Focus on high-impact moments: one well-orchestrated page load with staggered reveals (animation-delay) creates more delight than scattered micro-interactions. Use scroll-triggering and hover states that surprise.
-- **Spatial Composition**: Unexpected layouts. Asymmetry. Overlap. Diagonal flow. Grid-breaking elements. Generous negative space OR controlled density.
-- **Backgrounds & Visual Details**: Create atmosphere and depth rather than defaulting to solid colors. Add contextual effects and textures that match the overall aesthetic. Apply creative forms like gradient meshes, noise textures, geometric patterns, layered transparencies, dramatic shadows, decorative borders, custom cursors, and grain overlays.
+- **Typography**: Choose fonts that are beautiful, distinctive, and appropriate to the concept. Avoid generic defaults like Arial, Inter, Roboto, and unstyled system stacks unless the product intentionally calls for utilitarian restraint. Pair a characterful display face with a highly readable body face.
+- **Color & Theme**: Commit to a cohesive palette. Use CSS variables. For the alpine direction, consider off-black slate, snow, glacier blue, larch green, ochre trail-marker yellow, weathered stone, and one sharp safety accent.
+- **Motion**: Use motion for orientation and delight, not decoration. Mobile motion should be fast, light, and respectful of `prefers-reduced-motion`. Prioritize meaningful moments: image reveal, card expansion, route progress, confirmation, or saved state.
+- **Spatial Composition**: On mobile, create rhythm through stacked cards, overlapping media, sticky metadata strips, diagonal crops, and well-paced section breaks. On desktop, expand into asymmetry, grids, and generous negative space.
+- **Backgrounds & Visual Details**: Create atmosphere with grain, contour-line patterns, translucent panels, paper textures, topographic marks, weathered borders, depth shadows, and image-derived gradients. Avoid plain default surfaces unless restraint is the concept.
 
-NEVER use generic AI-generated aesthetics like overused font families (Inter, Roboto, Arial, system fonts), cliched color schemes (particularly purple gradients on white backgrounds), predictable layouts and component patterns, and cookie-cutter design that lacks context-specific character.
+NEVER use generic AI-generated aesthetics like clichéd purple gradients on white backgrounds, predictable hero-card-feature grids, identical rounded glass panels, default icon rows, or cookie-cutter layouts without context-specific character.
 
-Interpret creatively and make unexpected choices that feel genuinely designed for the context. No design should be the same. Vary between light and dark themes, different fonts, different aesthetics. NEVER converge on common choices (Space Grotesk, for example) across generations.
+Interpret creatively and make unexpected choices that feel genuinely designed for the context. No design should be the same. Vary between light and dark themes, different fonts, different compositions, and different interaction models. Never converge on the same "safe" visual vocabulary across generations.
 
-**IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
+**IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive effects and responsive states. Minimalist or refined designs need restraint, precision, spacing, typography, and subtle details. Elegance comes from executing the vision well at every viewport.
 
 Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.

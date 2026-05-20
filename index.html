@@ -884,19 +884,40 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="mobile-first.css">
 </head>
 <body>
   <div class="app">
     <header class="hero">
-      <div class="eyebrow">🏔️ Sept 21 – Oct 1, 2026</div>
-      <h1>TMB Trip Tracker</h1>
-      <p>A pocket-sized command center for the Tour du Mont Blanc crew: itinerary, bookings, shared expenses, and the numbers you need when the WiFi is questionable.</p>
-      <div class="trip-pulse">
-        <div class="countdown" id="tripStatus"></div>
-        <div class="pending-panel">
-          <strong>Pending items to button up</strong>
-          <p>Yellow means unbooked or arrange locally. Not a crisis, just worth tracking.</p>
-          <div class="pending-list" id="pendingList"></div>
+      <div class="hero-shell">
+        <div class="hero-media">
+          <img src="resources/images/mountains2.jpg" alt="Alpine huts below a sunlit Mont Blanc ridge">
+          <div class="hero-copy">
+            <div class="eyebrow">Sept 21 - Oct 1, 2026</div>
+            <h1>TMB Field Guide</h1>
+            <p>A thumb-ready command center for the Tour du Mont Blanc crew: trail days, lodging codes, local transfers, and group money when signal gets thin.</p>
+            <div class="hero-actions" aria-label="Trip highlights">
+              <span class="chip booked">11 days</span>
+              <span class="chip travel">3 countries</span>
+              <span class="chip unbooked">Open transfers</span>
+            </div>
+          </div>
+        </div>
+        <aside class="route-card" aria-label="Route snapshot">
+          <div class="map-label">Pocket route brief</div>
+          <div class="route-stats">
+            <div class="route-stat"><strong>106</strong><span>approx miles</span></div>
+            <div class="route-stat"><strong>3</strong><span>borders</span></div>
+            <div class="route-stat"><strong>4</strong><span>travelers</span></div>
+          </div>
+        </aside>
+        <div class="trip-pulse">
+          <div class="countdown" id="tripStatus"></div>
+          <div class="pending-panel">
+            <strong>Trail loose ends</strong>
+            <p>Yellow means unbooked or arranged locally. Keep these visible before wheels-up.</p>
+            <div class="pending-list" id="pendingList"></div>
+          </div>
         </div>
       </div>
     </header>
@@ -913,15 +934,15 @@
     <main>
       <section class="tab-panel active" id="timelinePanel">
         <div class="section-title">
-          <h2>Daily Timeline</h2>
-          <span>Tap a card for details</span>
+          <h2>Trail timeline</h2>
+          <span>Tap a card for route, lodging, and notes</span>
         </div>
         <div class="timeline" id="timeline"></div>
       </section>
 
       <section class="tab-panel" id="bookingsPanel">
         <div class="section-title">
-          <h2>Booking Reference</h2>
+          <h2>Booking wallet</h2>
           <span id="bookingCount"></span>
         </div>
         <div class="filter-row" id="bookingFilters"></div>
@@ -930,8 +951,8 @@
 
       <section class="tab-panel" id="expensesPanel">
         <div class="section-title">
-          <h2>Group Expenses</h2>
-          <span>Local to this device</span>
+          <h2>Trail split</h2>
+          <span>Saved locally on this device</span>
         </div>
         <div class="expense-grid">
           <article class="expense-card">
@@ -966,8 +987,8 @@
 
       <section class="tab-panel" id="infoPanel">
         <div class="section-title">
-          <h2>Trip Info</h2>
-          <span>Useful offline-ish reference</span>
+          <h2>Field notes</h2>
+          <span>Emergency, weather, apps, and crew contacts</span>
         </div>
         <div class="info-grid">
           <article class="info-card">
@@ -1448,6 +1469,20 @@
       $("#pendingList").innerHTML = pendingItems.map((item) => `<span class="pending-pill">${item}</span>`).join("");
     }
 
+    function imageForDay(day) {
+      const images = [
+        "resources/images/hovel.jpg",
+        "resources/images/mountains1.jpg",
+        "resources/images/mountains2.jpg",
+        "resources/images/window.jpg",
+        "resources/images/The-view-of-the-Mont-Blanc-scaled.jpg",
+        "resources/images/signs.jpg"
+      ];
+      if (day.status === "city") return "resources/images/window.jpg";
+      if (day.status === "travel") return "resources/images/The-view-of-the-Mont-Blanc-scaled.jpg";
+      return images[(day.day - 1) % images.length];
+    }
+
     function renderTimeline() {
       const today = todayKey();
       const isWithinTrip = today >= tripDays[0].date && today <= tripDays[tripDays.length - 1].date;
@@ -1455,14 +1490,19 @@
       $("#timeline").innerHTML = tripDays.map((day) => {
         const isToday = activeDay && activeDay.day === day.day;
         const isOpen = isToday;
+        const image = imageForDay(day);
         return `
           <article class="day-card ${isToday ? "today" : ""} ${isOpen ? "open" : ""}" id="day-${day.day}" data-day="${day.day}">
+            <div class="day-media">
+              <img src="${image}" alt="Scenic reference for ${day.title}" loading="lazy">
+              <div class="day-date-badge">Day ${day.day} <span>${day.dateLabel}</span></div>
+            </div>
             <button class="day-toggle" type="button" aria-expanded="${isOpen}">
               <div class="day-head">
                 <div class="day-title-line">
                   <div>
-                    <div class="day-title">Day ${day.day} · ${day.dateLabel} · ${day.title}</div>
-                    <div class="day-location">${day.location}</div>
+                    <div class="day-title">${day.title}</div>
+                    <div class="day-location">${day.weekday} · ${day.location}</div>
                   </div>
                   <span class="chevron">⌄</span>
                 </div>
