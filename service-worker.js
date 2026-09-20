@@ -1,4 +1,4 @@
-const CACHE_NAME = "tiens-bon-v1";
+const CACHE_NAME = "tiens-bon-v2";
 const APP_SHELL = [
   "./",
   "./index.html",

@@ -100,10 +100,22 @@ function nextHike(fromDate = todayKey()) {
 function statTiles(hike, compact = false) {
   return `
     <div class="stat-grid ${compact ? "compact-stats" : ""}">
-      <div class="stat"><span>Distance</span><strong>${hike.distanceMi} mi</strong><small>${hike.distanceKm} km</small></div>
+      <div class="stat"><span>Plan distance</span><strong>${hike.distanceMi} mi</strong><small>${hike.distanceKm} km</small></div>
       <div class="stat ascent"><span>Ascent</span><strong>↑ ${hike.ascentFt.toLocaleString()} ft</strong><small>${hike.ascentM.toLocaleString()} m</small></div>
       <div class="stat descent"><span>Descent</span><strong>↓ ${hike.descentFt.toLocaleString()} ft</strong><small>${hike.descentM.toLocaleString()} m</small></div>
       <div class="stat"><span>Moving time</span><strong>${hike.duration}</strong><small>${hike.difficulty}</small></div>
+    </div>
+  `;
+}
+
+function mappedTrackCheck(hike) {
+  if (!hike.mapped) return "";
+  const difference = Math.abs(hike.mapped.distanceKm - hike.distanceKm) / hike.distanceKm;
+  return `
+    <div class="track-check ${difference >= 0.12 ? "track-warning" : ""}">
+      <span>Supplied GPX</span>
+      <strong>${hike.mapped.distanceMi} mi / ${hike.mapped.distanceKm} km</strong>
+      <small>↑ ${hike.mapped.ascentFt.toLocaleString()} ft · ↓ ${hike.mapped.descentFt.toLocaleString()} ft${difference >= 0.12 ? " · differs from itinerary estimate" : ""}</small>
     </div>
   `;
 }
@@ -200,6 +212,7 @@ function fieldBrief(day, eyebrow) {
         </div>
         <p class="lead">${escapeHtml(day.summary)}</p>
         ${statTiles(hike)}
+        ${mappedTrackCheck(hike)}
         <div class="time-ribbon">
           <div><span>Trail start</span><strong>${hike.start}</strong></div>
           <div><span>Expected finish</span><strong>${hike.arrival}</strong></div>
@@ -275,6 +288,7 @@ function itineraryCard(day) {
       <div class="card-detail">
         ${day.hike ? `
           <div class="route-line"><span class="card-label">Full route</span><p>${escapeHtml(day.hike.route)}</p></div>
+          ${mappedTrackCheck(day.hike)}
           <div class="time-ribbon">
             <div><span>Start</span><strong>${day.hike.start}</strong></div>
             <div><span>Finish</span><strong>${day.hike.arrival}</strong></div>
@@ -430,7 +444,12 @@ function updateMap() {
       const coords = feature.geometry.type === "Point"
         ? `<a href="https://www.google.com/maps/search/?api=1&query=${feature.geometry.coordinates[1]},${feature.geometry.coordinates[0]}" target="_blank" rel="noopener">Open in maps ↗</a>`
         : "";
-      layer.bindPopup(`<strong>${escapeHtml(name)}</strong><small>${day}</small>${coords}`);
+      const trackStats = feature.properties.gpx
+        ? `<small>${feature.properties.distanceKm} km mapped · ↑ ${feature.properties.ascentM} m · ↓ ${feature.properties.descentM} m</small>`
+        : feature.properties.connector
+          ? `<small>Approximate ${feature.properties.distanceKm} km station connection</small>`
+          : "";
+      layer.bindPopup(`<strong>${escapeHtml(name)}</strong><small>${day}</small>${trackStats}${coords}`);
     }
   }).addTo(map);
   const bounds = mapFeatures.getBounds();

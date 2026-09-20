@@ -568,6 +568,43 @@ a {
   color: var(--glacier);
 }
 
+.track-check {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 10px;
+  margin: 8px 0 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(143, 199, 217, .35);
+  border-radius: 14px;
+  background: rgba(143, 199, 217, .08);
+}
+
+.track-check span {
+  color: var(--glacier);
+  font-size: .66rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.track-check strong {
+  font-size: .88rem;
+}
+
+.track-check small {
+  grid-column: 1 / -1;
+  color: var(--mist);
+}
+
+.track-check.track-warning {
+  border-color: rgba(242, 185, 49, .45);
+  background: var(--yellow-soft);
+}
+
+.track-check.track-warning span {
+  color: var(--yellow);
+}
+
 .time-ribbon {
   display: grid;
   grid-template-columns: 1fr 1fr;

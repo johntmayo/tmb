@@ -2,7 +2,9 @@
 
 Drop replacement photos in this folder using the exact filenames below. The app already points to them and falls back to the current generic alpine images until each file arrives.
 
-Use landscape images when possible, ideally at least 1600 px wide. Phone photos are fine. JPG or WebP content works, but keep the `.jpg` filename shown here.
+Use landscape images when possible. From Wikimedia Commons, choose **1,280 × 960**; it is sharp enough for high-density phones without bloating the offline app. Phone photos around 1,200–1,600 px wide are also ideal. JPG or WebP content works, but keep the `.jpg` filename shown here.
+
+For every Wikimedia image, retain the source URL, creator, and license so the app can display proper attribution.
 
 ## Priority 1 — the six hike cards
 

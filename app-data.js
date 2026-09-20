@@ -59,6 +59,7 @@ const TRIP_DAYS = [
       descentM: 1400,
       duration: "5½–7 hr",
       difficulty: "Hard",
+      mapped: { distanceMi: 13.3, distanceKm: 21.4, ascentFt: 4920, ascentM: 1499, descentFt: 4370, descentM: 1332 },
       route: "Les Houches → Bellevue → Col de Voza → Bionnassay Bridge → Col du Tricot → Refuge de Miage → Auberge Le Truc → Gîte Le Pontet",
       stops: [
         { name: "Les Houches", detail: "Trail start", coords: [45.896025, 6.805760] },
@@ -98,6 +99,7 @@ const TRIP_DAYS = [
       descentM: 975,
       duration: "7–8 hr",
       difficulty: "Hard",
+      mapped: { distanceMi: 10.2, distanceKm: 16.3, ascentFt: 4310, ascentM: 1314, descentFt: 3070, descentM: 935 },
       route: "Gîte Le Pontet → Notre-Dame de la Gorge → Col du Bonhomme → Col de la Croix du Bonhomme → Les Chapieux",
       stops: [
         { name: "Gîte Le Pontet", detail: "Trail start", coords: [45.802862, 6.722050] },
@@ -136,6 +138,7 @@ const TRIP_DAYS = [
       descentM: 1400,
       duration: "5–6½ hr",
       difficulty: "Moderate",
+      mapped: { distanceMi: 8.6, distanceKm: 13.8, ascentFt: 2250, ascentM: 685, descentFt: 3040, descentM: 927 },
       route: "Refuge des Mottets → Col de la Seigne → Rifugio Elisabetta → Val Veny → La Visaille",
       stops: [
         { name: "Refuge des Mottets", detail: "Trail start", coords: [45.737141, 6.779044] },
@@ -175,6 +178,7 @@ const TRIP_DAYS = [
       descentM: 1100,
       duration: "5–6 hr",
       difficulty: "Hard",
+      mapped: { distanceMi: 8.9, distanceKm: 14.4, ascentFt: 2750, ascentM: 838, descentFt: 3245, descentM: 989 },
       route: "Arp Nouvaz (Arnuva) → Grand Col Ferret → La Fouly",
       stops: [
         { name: "Piazzale Monte Bianco", detail: "Courmayeur bus departure area", coords: [45.791380, 6.970458] },
@@ -215,6 +219,7 @@ const TRIP_DAYS = [
       descentM: 1100,
       duration: "4½–6 hr",
       difficulty: "Moderate",
+      mapped: { distanceMi: 9.8, distanceKm: 15.8, ascentFt: 2630, ascentM: 801, descentFt: 3205, descentM: 977 },
       route: "Champex-Lac → Alp Bovine → Trient",
       stops: [
         { name: "Pension En Plein Air", detail: "Trail start", coords: [46.031175, 7.112626] },
@@ -236,34 +241,35 @@ const TRIP_DAYS = [
     dateLabel: "Sep 28",
     weekday: "Monday",
     kind: "hike",
-    title: "Trient → Vallorcine",
+    title: "Trient → Tré-le-Champ",
     location: "Switzerland → France",
-    summary: "Return to Trient, climb Col de Balme, traverse Aiguillette des Posettes, and finish at the train.",
+    summary: "Return to Trient, climb Col de Balme, traverse Aiguillette des Posettes, then walk from Tré-le-Champ to Montroc station.",
     image: "resources/images/places/aiguillette-des-posettes.jpg",
     fallbackImage: "resources/images/The-view-of-the-Mont-Blanc-scaled.jpg",
     hike: {
       start: "About 8:15 AM",
       arrival: "2:30–4:00 PM",
-      distanceMi: 10,
-      distanceKm: 16,
-      ascentFt: 3200,
-      ascentM: 975,
-      descentFt: 3400,
-      descentM: 1035,
+      distanceMi: 8.8,
+      distanceKm: 14.2,
+      ascentFt: 3600,
+      ascentM: 1100,
+      descentFt: 3300,
+      descentM: 1000,
       duration: "5½–7 hr",
       difficulty: "Hard",
-      route: "Trient → Col de Balme → Aiguillette des Posettes → Tré-le-Champ → Vallorcine",
+      mapped: { distanceMi: 8.8, distanceKm: 14.2, ascentFt: 3600, ascentM: 1099, descentFt: 3265, descentM: 995 },
+      route: "Trient → Col de Balme → Aiguillette des Posettes → Tré-le-Champ → Montroc-le-Planet station",
       stops: [
         { name: "Trient", detail: "Trail start", coords: [46.055949, 6.995374] },
         { name: "Col de Balme", detail: "Switzerland–France border / high point", coords: [46.026367, 6.970289] },
         { name: "Aiguillette des Posettes", detail: "Exposed scenic ridge", coords: [46.018125, 6.940251] },
-        { name: "Tré-le-Champ", detail: "Hamlet / route junction", coords: [45.996831, 6.927821] },
-        { name: "Vallorcine", detail: "Finish / TER station", coords: [46.032476, 6.932667] }
+        { name: "Tré-le-Champ", detail: "Trail finish", coords: [45.996831, 6.927821] },
+        { name: "Montroc-le-Planet", detail: "TER station · about 600 m from the trail finish", coords: [45.996415, 6.934543] }
       ]
     },
     transfers: [
       { mode: "Bus 213", route: "Martigny → Trient", time: "About 7:30 AM", duration: "Check SBB on the day", status: "local" },
-      { mode: "TER train", route: "Vallorcine → Chamonix", time: "After the hike", duration: "About 35 min", status: "local", detail: "Buy at station or in SNCF Connect." }
+      { mode: "TER train", route: "Montroc-le-Planet → Chamonix", time: "After the hike", duration: "Check SNCF on the day", status: "local", detail: "Direct toward Saint-Gervais; do not travel north to Vallorcine first." }
     ],
     lodging: { name: "Hôtel de L'Arve", place: "Chamonix", price: "€239.80 · family room · breakfast", status: "booked" }
   },
