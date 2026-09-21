@@ -110,15 +110,7 @@ function statTiles(hike, compact = false) {
 }
 
 function mappedTrackCheck(hike) {
-  if (!hike.mapped) return "";
-  const difference = Math.abs(hike.mapped.distanceKm - hike.distanceKm) / hike.distanceKm;
-  return `
-    <div class="track-check ${difference >= 0.12 ? "track-warning" : ""}">
-      <span>Supplied GPX</span>
-      <strong>${hike.mapped.distanceMi} mi / ${hike.mapped.distanceKm} km</strong>
-      <small>↑ ${hike.mapped.ascentFt.toLocaleString()} ft · ↓ ${hike.mapped.descentFt.toLocaleString()} ft${difference >= 0.12 ? " · differs from itinerary estimate" : ""}</small>
-    </div>
-  `;
+  return "";
 }
 
 function transferRows(transfers = []) {
@@ -536,13 +528,14 @@ function updateMap() {
     ...TMB_MAP_DATA,
     features: TMB_MAP_DATA.features.filter((feature) => feature.properties.mapDay === selectedHikeDay)
   };
-  const routeColor = "#ed2d3f";
+  const hikeColor = "#e63946";
+  const transferColor = "#8338ec";
   mapFeatures = L.geoJSON(filtered, {
     style: (feature) => ({
-      color: routeColor,
-      weight: feature.properties.transport ? 4 : 6,
-      opacity: 1,
-      dashArray: feature.properties.transport ? "10 8" : null,
+      color: feature.properties.transport ? transferColor : hikeColor,
+      weight: feature.properties.transport ? 4 : 5,
+      opacity: feature.properties.transport ? 0.85 : 1,
+      dashArray: feature.properties.transport ? "8 6" : null,
       lineCap: "round",
       lineJoin: "round"
     }),
@@ -561,9 +554,9 @@ function updateMap() {
         });
       }
       return L.circleMarker(latlng, {
-        radius: 7,
+        radius: 5,
         color: "#071710",
-        weight: 2,
+        weight: 1.5,
         fillColor: "#ffd23f",
         fillOpacity: 1
       });
