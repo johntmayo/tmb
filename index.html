@@ -47,83 +47,97 @@
       <button class="install-btn" id="installBtn" type="button" hidden>Install app</button>
     </div>
 
-    <nav class="tabs" aria-label="Trip sections">
-      <button class="tab-btn active" type="button" data-tab="today"><span>⌖</span>Today</button>
-      <button class="tab-btn" type="button" data-tab="itinerary"><span>≡</span>Stages</button>
-      <button class="tab-btn" type="button" data-tab="map"><span>△</span>Map</button>
-      <button class="tab-btn" type="button" data-tab="wallet"><span>▣</span>Wallet</button>
-      <button class="tab-btn" type="button" data-tab="field"><span>＋</span>Field</button>
+    <nav class="tabs" aria-label="App sections">
+      <button class="tab-btn active" type="button" data-tab="day"><span>01</span>Day plan</button>
+      <button class="tab-btn" type="button" data-tab="toolkit"><span>＋</span>Toolkit</button>
     </nav>
 
     <main>
-      <section class="tab-panel active" id="todayPanel">
+      <section class="tab-panel active" id="dayPanel">
+        <div class="section-heading day-plan-heading">
+          <p class="kicker">One day at a time</p>
+          <h2>Your complete day</h2>
+          <p>Wake-up, trailhead, every trail stop, finish, transfers, and tonight’s bed—in order.</p>
+        </div>
+        <div class="day-switcher" aria-label="Choose hiking day">
+          <button class="day-arrow" id="previousDayBtn" type="button" aria-label="Previous hiking day">←</button>
+          <div>
+            <span id="selectedDayLabel">Hike 1 of 6</span>
+            <strong id="selectedDayTitle">Loading day…</strong>
+          </div>
+          <button class="day-arrow" id="nextDayBtn" type="button" aria-label="Next hiking day">→</button>
+        </div>
+        <div class="day-number-row" id="dayButtons"></div>
+        <div id="dayOverview"></div>
+        <div class="day-map-section">
+          <div class="subheading map-subheading">
+            <span>This day’s map</span>
+            <strong>GPX trail · transfers · beds</strong>
+          </div>
+          <div class="map-legend" aria-label="Map legend">
+            <span><i class="legend-line"></i> Hiking track</span>
+            <span><i class="legend-line dashed"></i> Transfer</span>
+            <span><i class="legend-lodge">⌂</i> Overnight</span>
+          </div>
+          <div class="map-shell day-map-shell">
+            <div id="map" aria-label="Interactive map for the selected hiking day"></div>
+            <div class="map-fallback" id="mapFallback" hidden>
+              <strong>The interactive base map needs a connection the first time.</strong>
+              <p>The ordered day plan below still works offline.</p>
+            </div>
+          </div>
+          <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> · rendered with Leaflet</p>
+        </div>
+        <div class="journey" id="dayJourney"></div>
+      </section>
+
+      <section class="tab-panel" id="toolkitPanel">
+        <div class="section-heading">
+          <p class="kicker">Everything else</p>
+          <h2>Trail toolkit</h2>
+          <p>Time, money, emergency help, weather, bookings, expenses, and private notes.</p>
+        </div>
         <div class="world-clock" aria-label="Current time in Los Angeles and the Alps">
           <article><span>Los Angeles</span><strong id="losAngelesTime">--:--</strong><small id="losAngelesDate"></small></article>
           <div class="clock-flight">↗ <span>9 hr</span></div>
           <article><span>Alps local</span><strong id="alpsTime">--:--</strong><small id="alpsDate"></small></article>
         </div>
-        <div id="todayBrief"></div>
-      </section>
+        <div class="alert-card toolkit-alert">
+          <div><span class="card-label">European emergency</span><a href="tel:112">112</a></div>
+          <p>France mountain rescue: 112 · Italy: 112/118 · Switzerland medical: 144 · Rega alpine rescue: 1414</p>
+        </div>
+        <div class="info-grid toolkit-top-grid">
+          <article class="info-card">
+            <span class="card-label">Weather check</span>
+            <div class="link-list">
+              <a href="https://www.mountain-forecast.com/peaks/Mont-Blanc/forecasts/2000" target="_blank" rel="noopener">Mont Blanc forecast · 2,000 m <span>↗</span></a>
+              <a href="https://meteofrance.com/previsions-meteo-france/chamonix-mont-blanc/74400" target="_blank" rel="noopener">Météo-France Chamonix <span>↗</span></a>
+              <a href="https://www.meteoswiss.admin.ch/local-forecasts/champex-lac/1938.html" target="_blank" rel="noopener">MeteoSwiss Champex <span>↗</span></a>
+            </div>
+          </article>
+          <article class="converter-card">
+            <div class="converter-heading">
+              <div><span class="card-label">Trail currency</span><h3>Quick converter</h3></div>
+              <small id="currencyRateStatus">Loading rates…</small>
+            </div>
+            <div class="converter-controls">
+              <label>Amount <input id="currencyAmount" type="number" inputmode="decimal" min="0" step="0.01" value="100"></label>
+              <label>From <select id="currencyFrom"><option value="USD">USD · United States</option><option value="EUR">EUR · France & Italy</option><option value="CHF">CHF · Switzerland</option></select></label>
+              <label>To <select id="currencyTo"><option value="EUR">EUR · France & Italy</option><option value="CHF">CHF · Switzerland</option><option value="USD">USD · United States</option></select></label>
+              <button class="swap-btn" id="swapCurrencyBtn" type="button" aria-label="Swap currencies">⇄ Swap currencies</button>
+            </div>
+            <output class="conversion-result" id="currencyResult">—</output>
+          </article>
+        </div>
 
-      <section class="tab-panel" id="itineraryPanel">
-        <div class="section-heading">
-          <p class="kicker">Six days · three countries</p>
-          <h2>The hiking stages</h2>
-          <p>Critical hiking numbers stay visible before you open a card.</p>
-        </div>
-        <div class="timeline" id="timeline"></div>
-      </section>
-
-      <section class="tab-panel" id="mapPanel">
-        <div class="section-heading">
-          <p class="kicker">Six GPX stages · seven overnights</p>
-          <h2>Trail map</h2>
-          <p>Supplied GPX tracks, confirmed waypoints, transfers, and every overnight. This is a trip overview, not your sole navigation source.</p>
-        </div>
-        <div class="map-toolbar" id="mapFilters" aria-label="Choose map day"></div>
-        <div class="map-legend" aria-label="Map legend">
-          <span><i class="legend-line"></i> Hiking track</span>
-          <span><i class="legend-line dashed"></i> Transfer</span>
-          <span><i class="legend-lodge">⌂</i> Overnight</span>
-        </div>
-        <div class="map-shell">
-          <div id="map" aria-label="Interactive Tour du Mont Blanc map"></div>
-          <div class="map-fallback" id="mapFallback" hidden>
-            <strong>The interactive base map needs a connection the first time.</strong>
-            <p>Your itinerary and waypoint directory still work offline.</p>
-          </div>
-        </div>
-        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> · rendered with Leaflet</p>
-        <div class="map-note">
-          <span>Offline plan</span>
-          <p>Download the route in Organic Maps or Maps.me before departure. OpenStreetMap tiles are not guaranteed offline.</p>
-          <a href="https://umap.openstreetmap.fr/en/map/tour-du-mont-blanc_1445721" target="_blank" rel="noopener">Open the source UMAP ↗</a>
-        </div>
-        <div class="waypoint-directory" id="waypointDirectory"></div>
-      </section>
-
-      <section class="tab-panel" id="walletPanel">
-        <div class="section-heading">
-          <p class="kicker">Public-safe by design</p>
-          <h2>Trip wallet</h2>
-          <p>Statuses and logistics are shared. Confirmation codes and private details you add below stay only on this device.</p>
+        <div class="section-heading compact">
+          <p class="kicker">Reservations & rides</p>
+          <h2>Bookings</h2>
+          <p>Shared logistics first; John and Rachel’s flights stay at the bottom.</p>
         </div>
         <article class="privacy-card">
           <div class="privacy-icon">⌁</div>
           <div><strong>Private pocket</strong><p>Nothing typed into a private note is uploaded by this static app.</p></div>
-        </article>
-        <article class="converter-card">
-          <div class="converter-heading">
-            <div><span class="card-label">Trail currency</span><h3>Quick converter</h3></div>
-            <small id="currencyRateStatus">Loading rates…</small>
-          </div>
-          <div class="converter-controls">
-            <label>Amount <input id="currencyAmount" type="number" inputmode="decimal" min="0" step="0.01" value="100"></label>
-            <label>From <select id="currencyFrom"><option value="USD">USD · United States</option><option value="EUR">EUR · France & Italy</option><option value="CHF">CHF · Switzerland</option></select></label>
-            <label>To <select id="currencyTo"><option value="EUR">EUR · France & Italy</option><option value="CHF">CHF · Switzerland</option><option value="USD">USD · United States</option></select></label>
-            <button class="swap-btn" id="swapCurrencyBtn" type="button" aria-label="Swap currencies">⇄ Swap currencies</button>
-          </div>
-          <output class="conversion-result" id="currencyResult">—</output>
         </article>
         <div class="filter-row" id="bookingFilters" aria-label="Filter bookings"></div>
         <div class="booking-list" id="bookingList"></div>
@@ -150,27 +164,11 @@
             <div class="expense-list" id="expenseList"></div>
           </article>
         </div>
-      </section>
-
-      <section class="tab-panel" id="fieldPanel">
-        <div class="section-heading">
-          <p class="kicker">When plans wobble</p>
-          <h2>Field desk</h2>
-          <p>Emergency numbers, weather, apps, loose ends, and device-local crew contacts.</p>
-        </div>
-        <div class="alert-card">
-          <div><span class="card-label">European emergency</span><a href="tel:112">112</a></div>
-          <p>France mountain rescue: 112 · Italy: 112/118 · Switzerland medical: 144 · Rega alpine rescue: 1414</p>
+        <div class="section-heading compact">
+          <p class="kicker">Before & during</p>
+          <h2>Prep and crew</h2>
         </div>
         <div class="info-grid">
-          <article class="info-card">
-            <span class="card-label">Weather check</span>
-            <div class="link-list">
-              <a href="https://www.mountain-forecast.com/peaks/Mont-Blanc/forecasts/2000" target="_blank" rel="noopener">Mont Blanc forecast · 2,000 m <span>↗</span></a>
-              <a href="https://meteofrance.com/previsions-meteo-france/chamonix-mont-blanc/74400" target="_blank" rel="noopener">Météo-France Chamonix <span>↗</span></a>
-              <a href="https://www.meteoswiss.admin.ch/local-forecasts/champex-lac/1938.html" target="_blank" rel="noopener">MeteoSwiss Champex <span>↗</span></a>
-            </div>
-          </article>
           <article class="info-card">
             <span class="card-label">Before departure</span>
             <ul class="check-list" id="pretripChecklist"></ul>

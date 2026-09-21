@@ -130,7 +130,7 @@ a {
 
 .hero {
   position: relative;
-  min-height: min(670px, 82svh);
+  min-height: min(460px, 58svh);
   overflow: hidden;
   border: 1px solid var(--line-strong);
   border-radius: 32px;
@@ -382,7 +382,7 @@ a {
   right: 9px;
   bottom: calc(9px + env(safe-area-inset-bottom));
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 3px;
   padding: 6px;
   border: 1px solid var(--line-strong);
@@ -390,6 +390,303 @@ a {
   background: rgba(5, 21, 15, .9);
   box-shadow: 0 22px 50px rgba(0, 0, 0, .46);
   backdrop-filter: blur(20px);
+}
+
+.day-plan-heading {
+  margin-bottom: 14px;
+}
+
+.day-switcher {
+  position: sticky;
+  z-index: 520;
+  top: 8px;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) 46px;
+  gap: 9px;
+  align-items: center;
+  padding: 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 23px;
+  background: rgba(5, 21, 15, .92);
+  box-shadow: 0 17px 45px rgba(0, 0, 0, .34);
+  backdrop-filter: blur(20px);
+}
+
+.day-switcher > div {
+  min-width: 0;
+  text-align: center;
+}
+
+.day-switcher span {
+  display: block;
+  color: var(--yellow);
+  font-size: .64rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.day-switcher strong {
+  display: block;
+  overflow: hidden;
+  margin-top: 2px;
+  color: var(--snow);
+  font-family: var(--serif);
+  font-size: clamp(.96rem, 4.2vw, 1.25rem);
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.day-arrow {
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  background: rgba(243, 234, 212, .08);
+  color: var(--paper);
+  font-size: 1.45rem;
+}
+
+.day-arrow:disabled {
+  opacity: .25;
+}
+
+.day-number-row {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 5px;
+  margin: 9px 2px 18px;
+}
+
+.day-number-row button {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 49px;
+  padding: 5px 1px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: rgba(243, 234, 212, .045);
+  color: var(--mist);
+}
+
+.day-number-row span {
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 1.08rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.day-number-row small {
+  font-size: .54rem;
+}
+
+.day-number-row button.active {
+  border-color: var(--yellow);
+  background: var(--yellow);
+  color: var(--ink);
+  box-shadow: 0 8px 24px rgba(242, 185, 49, .2);
+}
+
+.day-number-row button.active span {
+  color: var(--ink);
+}
+
+.day-overview-card {
+  margin-top: 0;
+}
+
+.day-map-section {
+  margin-top: 24px;
+}
+
+.map-subheading {
+  margin: 0 3px 12px;
+}
+
+.day-map-shell {
+  height: min(52svh, 520px);
+  min-height: 360px;
+}
+
+.journey {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.journey-heading {
+  margin-left: 6px;
+}
+
+.journey-step {
+  display: grid;
+  grid-template-columns: 43px minmax(0, 1fr);
+  gap: 10px;
+  align-items: stretch;
+}
+
+.journey-marker {
+  display: grid;
+  grid-template-rows: 43px 1fr;
+  justify-items: center;
+}
+
+.journey-marker span {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-content: center;
+  border: 2px solid var(--night);
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--ink);
+  box-shadow: 0 0 0 1px var(--line-strong);
+  font-family: var(--serif);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.journey-marker i {
+  width: 2px;
+  min-height: 22px;
+  background: linear-gradient(var(--yellow), rgba(242, 185, 49, .15));
+}
+
+.journey-step:last-child .journey-marker i {
+  display: none;
+}
+
+.journey-card {
+  margin-bottom: 11px;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background:
+    linear-gradient(145deg, rgba(243, 234, 212, .075), rgba(243, 234, 212, .02)),
+    rgba(7, 25, 18, .86);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, .2);
+}
+
+.journey-card h3 {
+  margin: 4px 0 8px;
+  color: var(--snow);
+  font-family: var(--serif);
+  font-size: clamp(1.45rem, 6.6vw, 2.25rem);
+  line-height: .98;
+  letter-spacing: -.045em;
+}
+
+.journey-card > p {
+  margin: 0;
+  color: var(--mist);
+}
+
+.journey-card > small {
+  display: block;
+  margin-top: 4px;
+  color: var(--mist);
+}
+
+.journey-note {
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(243, 234, 212, .035);
+}
+
+.location-block {
+  display: grid;
+  gap: 3px;
+  margin-top: 11px;
+  padding: 13px;
+  border-left: 4px solid var(--yellow);
+  border-radius: 4px 16px 16px 4px;
+  background: var(--yellow-soft);
+}
+
+.location-block > span,
+.connection-points span {
+  color: var(--yellow);
+  font-size: .63rem;
+  font-weight: 900;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.location-block > strong {
+  font-family: var(--serif);
+  font-size: 1.25rem;
+}
+
+.location-block > small,
+.connection-points small {
+  color: var(--mist);
+}
+
+.location-link {
+  width: fit-content;
+  margin-top: 7px;
+  color: var(--glacier);
+  font-size: .76rem;
+  font-weight: 850;
+}
+
+.route-sentence {
+  padding-bottom: 12px;
+  color: var(--paper) !important;
+  font-family: var(--serif);
+  font-size: 1.08rem;
+  line-height: 1.45;
+}
+
+.journey-card .subheading {
+  margin-top: 9px;
+}
+
+.journey-card .route-checklist {
+  margin-top: 0;
+}
+
+.finish-step .journey-marker span {
+  background: var(--glacier);
+}
+
+.finish-location {
+  border-left-color: var(--glacier);
+  background: rgba(143, 199, 217, .1);
+}
+
+.sleep-step .journey-marker span {
+  background: var(--moss);
+}
+
+.sleep-step .private-note {
+  margin-top: 14px;
+}
+
+.connection-points {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.connection-points > div {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(243, 234, 212, .04);
+}
+
+.toolkit-alert {
+  margin-top: 12px;
+}
+
+.toolkit-top-grid {
+  margin-top: 12px;
 }
 
 .tab-btn {
@@ -1720,7 +2017,7 @@ footer strong {
   }
 
   .hero {
-    min-height: 760px;
+    min-height: 560px;
   }
 
   .tabs {
@@ -1729,13 +2026,17 @@ footer strong {
     left: auto;
     right: auto;
     bottom: auto;
-    width: min(620px, 100%);
+    width: min(440px, 100%);
     margin: -28px auto 0;
     border-radius: 999px;
   }
 
   .tab-panel {
     scroll-margin-top: 86px;
+  }
+
+  .day-switcher {
+    top: 84px;
   }
 
   .tab-btn {

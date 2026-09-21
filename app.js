@@ -4,7 +4,8 @@ const STORAGE = {
   checklist: "tmb-checklist-v2",
   contacts: "tmb-contacts-v2",
   expenses: "tmb-expenses-v2",
-  currencyRates: "tmb-currency-rates-v1"
+  currencyRates: "tmb-currency-rates-v1",
+  selectedDay: "tmb-selected-hike-day-v1"
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
@@ -12,7 +13,6 @@ const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const HIKING_DAYS = TRIP_DAYS.filter((day) => day.hikeDay);
 
 let activeBookingFilter = "all";
-let activeMapDay = "all";
 let privateNotes = loadJson(STORAGE.notes, {});
 let waypointProgress = loadJson(STORAGE.progress, {});
 let checklist = loadJson(STORAGE.checklist, {});
@@ -22,6 +22,9 @@ let currencyRates = loadJson(STORAGE.currencyRates, null);
 let deferredInstallPrompt = null;
 let map = null;
 let mapFeatures = null;
+const actualHikeToday = HIKING_DAYS.find((day) => day.date === todayKey());
+let selectedHikeDay = actualHikeToday?.hikeDay || Number(loadJson(STORAGE.selectedDay, focusDay().hikeDay));
+if (!HIKING_DAYS.some((day) => day.hikeDay === selectedHikeDay)) selectedHikeDay = focusDay().hikeDay;
 
 function loadJson(key, fallback) {
   try {
@@ -148,20 +151,29 @@ function lodgingBlock(lodging) {
   `;
 }
 
+function trailStops(day) {
+  const stops = day.hike?.stops || [];
+  const startIndex = Math.max(0, stops.findIndex((stop) => /trail start/i.test(stop.detail)));
+  const finishIndex = stops.findIndex((stop, index) => index >= startIndex && /finish/i.test(stop.detail));
+  return stops.slice(startIndex, finishIndex >= startIndex ? finishIndex + 1 : stops.length);
+}
+
 function stopsChecklist(day, context = "today") {
   if (!day.hike?.stops) return "";
   const key = `hike-${day.hikeDay}`;
   const completed = waypointProgress[key] || [];
+  const stops = trailStops(day);
   return `
     <div class="route-checklist" data-progress-key="${key}">
-      ${day.hike.stops.map((stop, index) => {
-        const checked = completed.includes(index);
+      ${stops.map((stop, displayIndex) => {
+        const sourceIndex = day.hike.stops.indexOf(stop);
+        const checked = completed.includes(sourceIndex);
         const mapUrl = `https://www.google.com/maps/search/?api=1&query=${stop.coords.join(",")}`;
         return `
           <div class="stop-row ${checked ? "reached" : ""}">
             <label>
-              <input type="checkbox" data-stop-index="${index}" ${checked ? "checked" : ""}>
-              <span class="stop-number">${String(index + 1).padStart(2, "0")}</span>
+              <input type="checkbox" data-stop-index="${sourceIndex}" ${checked ? "checked" : ""}>
+              <span class="stop-number">${String(displayIndex + 1).padStart(2, "0")}</span>
               <span><strong>${escapeHtml(stop.name)}</strong><small>${escapeHtml(stop.detail)}</small></span>
             </label>
             <a href="${mapUrl}" target="_blank" rel="noopener" aria-label="Open ${escapeHtml(stop.name)} in maps">↗</a>
@@ -171,6 +183,157 @@ function stopsChecklist(day, context = "today") {
       ${context === "today" ? `<p class="local-only-note">Checks are saved only on this device.</p>` : ""}
     </div>
   `;
+}
+
+function selectedDay() {
+  return HIKING_DAYS.find((day) => day.hikeDay === selectedHikeDay) || HIKING_DAYS[0];
+}
+
+function wakingLodging(day) {
+  const dayIndex = HIKING_DAYS.indexOf(day);
+  if (dayIndex > 0) return HIKING_DAYS[dayIndex - 1].lodging;
+  return TRIP_DAYS.find((item) => item.tripDay === 2)?.lodging;
+}
+
+function stopMapLink(stop, label = "Open in Maps") {
+  const url = `https://www.google.com/maps/search/?api=1&query=${stop.coords.join(",")}`;
+  return `<a class="location-link" href="${url}" target="_blank" rel="noopener">${escapeHtml(label)} ↗</a>`;
+}
+
+function journeyStep(number, label, title, content, modifier = "") {
+  return `
+    <article class="journey-step ${modifier}">
+      <div class="journey-marker"><span>${String(number).padStart(2, "0")}</span><i></i></div>
+      <div class="journey-card">
+        <span class="card-label">${escapeHtml(label)}</span>
+        <h3>${escapeHtml(title)}</h3>
+        ${content}
+      </div>
+    </article>
+  `;
+}
+
+function renderDayPlan() {
+  const day = selectedDay();
+  const hike = day.hike;
+  const stops = trailStops(day);
+  const startStop = stops[0];
+  const finishStop = stops.at(-1);
+  const finishIndex = day.hike.stops.indexOf(finishStop);
+  const connectionStops = day.hike.stops.slice(finishIndex + 1);
+  const beforeTransfers = (day.transfers || []).filter((leg) => leg.phase === "before");
+  const afterTransfers = (day.transfers || []).filter((leg) => leg.phase === "after");
+  const wake = wakingLodging(day);
+
+  $("#selectedDayLabel").textContent = `Hike ${day.hikeDay} of ${HIKING_DAYS.length} · ${day.weekday}, ${day.dateLabel}`;
+  $("#selectedDayTitle").textContent = day.title;
+  $("#previousDayBtn").disabled = day.hikeDay === 1;
+  $("#nextDayBtn").disabled = day.hikeDay === HIKING_DAYS.length;
+  $("#dayButtons").innerHTML = HIKING_DAYS.map((item) => `
+    <button type="button" class="${item.hikeDay === day.hikeDay ? "active" : ""}" data-select-day="${item.hikeDay}" aria-label="Show Hike ${item.hikeDay}: ${escapeHtml(item.title)}">
+      <span>${item.hikeDay}</span><small>${item.dateLabel}</small>
+    </button>
+  `).join("");
+
+  $("#dayOverview").innerHTML = `
+    <article class="today-card day-overview-card">
+      <div class="today-image">
+        <img src="${day.image}" data-fallback="${day.fallbackImage}" alt="${escapeHtml(day.title)}">
+        <span>Hike ${day.hikeDay} · ${escapeHtml(day.location)}</span>
+      </div>
+      <div class="today-content">
+        <div class="brief-title-row">
+          <div>
+            <p class="kicker">${day.weekday} · ${day.dateLabel}</p>
+            <h2>${escapeHtml(day.title)}</h2>
+          </div>
+          <span class="difficulty">${hike.difficulty}</span>
+        </div>
+        <p class="lead">${escapeHtml(day.summary)}</p>
+        <div class="time-ribbon">
+          <div><span>Start hiking</span><strong>${hike.start}</strong></div>
+          <div><span>Finish hiking</span><strong>${hike.arrival}</strong></div>
+        </div>
+        ${statTiles(hike)}
+        ${mappedTrackCheck(hike)}
+        <button class="ghost-btn full-btn" type="button" data-copy-brief="${day.tripDay}">Copy this day</button>
+      </div>
+    </article>
+  `;
+
+  const beforeContent = beforeTransfers.length
+    ? transferRows(beforeTransfers)
+    : `<p class="journey-note">You wake in the trail-start area. No vehicle transfer is planned before hiking.</p>`;
+  const connectionContent = connectionStops.length
+    ? `<div class="connection-points">${connectionStops.map((stop) => `
+        <div><span>Then</span><strong>${escapeHtml(stop.name)}</strong><small>${escapeHtml(stop.detail)}</small></div>
+      `).join("")}</div>`
+    : "";
+  const afterContent = afterTransfers.length
+    ? `${connectionContent}${transferRows(afterTransfers)}`
+    : `<p class="journey-note">No vehicle transfer is planned. The trail ends at tonight’s lodging.</p>`;
+
+  $("#dayJourney").innerHTML = `
+    <div class="section-heading compact journey-heading">
+      <p class="kicker">Morning to night</p>
+      <h2>Follow the day in order</h2>
+    </div>
+    ${journeyStep(1, "Wake up", wake?.name || "Morning lodging", `
+      <p>${escapeHtml(wake?.place || day.location)}</p>
+      <small>Start the day here.</small>
+    `, "wake-step")}
+    ${journeyStep(2, "Reach the trailhead", beforeTransfers.length ? "Morning transfer" : startStop.name, `
+      ${beforeContent}
+      <div class="location-block">
+        <span>Trail starts</span>
+        <strong>${escapeHtml(startStop.name)}</strong>
+        <small>${escapeHtml(startStop.detail)} · ${hike.start}</small>
+        ${stopMapLink(startStop, "Open trailhead")}
+      </div>
+    `)}
+    ${journeyStep(3, `${stops.length} trail stops`, "Hike this route", `
+      <p class="route-sentence">${stops.map((stop) => escapeHtml(stop.name)).join(" → ")}</p>
+      <div class="subheading"><span>Check off as you go</span><strong>Saved on this device</strong></div>
+      ${stopsChecklist(day, "day")}
+    `, "trail-step")}
+    ${journeyStep(4, "Trail finish", finishStop.name, `
+      <div class="location-block finish-location">
+        <span>Expected arrival</span>
+        <strong>${hike.arrival}</strong>
+        <small>${escapeHtml(finishStop.detail)}</small>
+        ${stopMapLink(finishStop, "Open trail finish")}
+      </div>
+    `, "finish-step")}
+    ${journeyStep(5, "After the trail", afterTransfers.length ? "Transfer to tonight’s stop" : "Walk into tonight", afterContent)}
+    ${journeyStep(6, "Sleep tonight", day.lodging.name, `
+      <p>${escapeHtml(day.lodging.place)} · ${escapeHtml(day.lodging.price)}</p>
+      <span class="status confirmed">Confirmed</span>
+      <label class="private-note">
+        <span>Private day note <small>this device only</small></span>
+        <textarea data-private-note="${day.tripDay}" rows="3" placeholder="Room detail, weather decision, pickup note…">${escapeHtml(privateNotes[day.tripDay] || "")}</textarea>
+      </label>
+    `, "sleep-step")}
+  `;
+
+  $$("[data-select-day]").forEach((button) => {
+    button.addEventListener("click", () => setSelectedHikeDay(Number(button.dataset.selectDay)));
+  });
+  setupRenderedInteractions($("#dayOverview"));
+  setupRenderedInteractions($("#dayJourney"));
+}
+
+function setSelectedHikeDay(hikeDay) {
+  if (!HIKING_DAYS.some((day) => day.hikeDay === hikeDay)) return;
+  selectedHikeDay = hikeDay;
+  saveJson(STORAGE.selectedDay, selectedHikeDay);
+  renderDayPlan();
+  updateMap();
+  $("#dayPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function setupDayNavigation() {
+  $("#previousDayBtn").addEventListener("click", () => setSelectedHikeDay(selectedHikeDay - 1));
+  $("#nextDayBtn").addEventListener("click", () => setSelectedHikeDay(selectedHikeDay + 1));
 }
 
 function fieldBrief(day, eyebrow) {
@@ -330,16 +493,6 @@ function setupRenderedInteractions(root) {
     });
   });
 
-  $$("[data-open-map]", root).forEach((button) => {
-    button.addEventListener("click", () => {
-      activeMapDay = String(button.dataset.openMap);
-      activateTab("map");
-      renderMapFilters();
-      updateMap();
-      scrollToPanel("map");
-    });
-  });
-
   $$("[data-copy-brief]", root).forEach((button) => {
     button.addEventListener("click", () => copyBriefing(Number(button.dataset.copyBrief)));
   });
@@ -353,7 +506,7 @@ async function copyBriefing(tripDay) {
     `Hike ${day.hikeDay}: ${day.title} — ${day.weekday}, ${day.dateLabel}`,
     `${hike.distanceMi} mi / ${hike.distanceKm} km · ↑ ${hike.ascentFt.toLocaleString()} ft · ↓ ${hike.descentFt.toLocaleString()} ft · ${hike.duration}`,
     `Start ${hike.start} · finish ${hike.arrival}`,
-    `Route: ${hike.stops.map((stop) => stop.name).join(" → ")}`
+    `Route: ${trailStops(day).map((stop) => stop.name).join(" → ")}`
   ].join("\n");
   try {
     await navigator.clipboard.writeText(text);
@@ -363,19 +516,10 @@ async function copyBriefing(tripDay) {
   }
 }
 
-function renderMapFilters() {
-  const options = [["all", "All"]];
-  HIKING_DAYS.forEach((day) => options.push([String(day.mapDay), `Hike ${day.hikeDay}`]));
-  $("#mapFilters").innerHTML = options.map(([value, label]) => `
-    <button class="filter-btn ${activeMapDay === value ? "active" : ""}" type="button" data-map-filter="${value}">${label}</button>
-  `).join("");
-}
-
 function initializeMap() {
   if (!window.L || !window.TMB_MAP_DATA) {
     $("#map").hidden = true;
     $("#mapFallback").hidden = false;
-    renderWaypointDirectory();
     return;
   }
   map = L.map("map", { zoomControl: true, scrollWheelZoom: false, attributionControl: false });
@@ -386,22 +530,12 @@ function initializeMap() {
 }
 
 function updateMap() {
-  renderWaypointDirectory();
   if (!map || !window.TMB_MAP_DATA) return;
   if (mapFeatures) mapFeatures.remove();
-  const allFeatures = TMB_MAP_DATA.features.filter((feature, index, features) => {
-    if (!feature.properties.lodging) return true;
-    return features.findIndex((candidate) => (
-      candidate.properties.lodging
-      && candidate.properties.name === feature.properties.name
-    )) === index;
-  });
-  const filtered = activeMapDay === "all"
-    ? { ...TMB_MAP_DATA, features: allFeatures }
-    : {
-        ...TMB_MAP_DATA,
-        features: TMB_MAP_DATA.features.filter((feature) => String(feature.properties.mapDay) === activeMapDay)
-      };
+  const filtered = {
+    ...TMB_MAP_DATA,
+    features: TMB_MAP_DATA.features.filter((feature) => feature.properties.mapDay === selectedHikeDay)
+  };
   const routeColor = "#ed2d3f";
   mapFeatures = L.geoJSON(filtered, {
     style: (feature) => ({
@@ -449,28 +583,8 @@ function updateMap() {
     }
   }).addTo(map);
   const bounds = mapFeatures.getBounds();
-  if (bounds.isValid()) map.fitBounds(bounds, { padding: [24, 24], maxZoom: activeMapDay === "all" ? 10 : 13 });
+  if (bounds.isValid()) map.fitBounds(bounds, { padding: [24, 24], maxZoom: 13 });
   setTimeout(() => map.invalidateSize(), 80);
-}
-
-function renderWaypointDirectory() {
-  const hikes = activeMapDay === "all"
-    ? HIKING_DAYS
-    : HIKING_DAYS.filter((day) => String(day.mapDay) === activeMapDay);
-  $("#waypointDirectory").innerHTML = hikes.map((day) => `
-    <details ${activeMapDay !== "all" ? "open" : ""}>
-      <summary><span>Hike ${day.hikeDay}</span><strong>${escapeHtml(day.title)}</strong></summary>
-      <div>
-        ${day.hike.stops.map((stop, index) => `
-          <a href="https://www.google.com/maps/search/?api=1&query=${stop.coords.join(",")}" target="_blank" rel="noopener">
-            <span>${String(index + 1).padStart(2, "0")}</span>
-            <div><strong>${escapeHtml(stop.name)}</strong><small>${escapeHtml(stop.detail)}</small></div>
-            <b>↗</b>
-          </a>
-        `).join("")}
-      </div>
-    </details>
-  `).join("");
 }
 
 function allBookings() {
@@ -774,7 +888,7 @@ function setupExpenseModal() {
 function activateTab(tab) {
   $$(".tab-btn").forEach((button) => button.classList.toggle("active", button.dataset.tab === tab));
   $$(".tab-panel").forEach((panel) => panel.classList.toggle("active", panel.id === `${tab}Panel`));
-  if (tab === "map" && map) setTimeout(() => map.invalidateSize(), 80);
+  if (tab === "day" && map) setTimeout(() => map.invalidateSize(), 80);
 }
 
 function scrollToPanel(tab) {
@@ -796,13 +910,6 @@ function setupNavigation() {
     activeBookingFilter = button.dataset.bookingFilter;
     renderBookingFilters();
     renderBookings();
-  });
-  $("#mapFilters").addEventListener("click", (event) => {
-    const button = event.target.closest("[data-map-filter]");
-    if (!button) return;
-    activeMapDay = button.dataset.mapFilter;
-    renderMapFilters();
-    updateMap();
   });
 }
 
@@ -845,9 +952,7 @@ function registerServiceWorker() {
 function init() {
   $("#tripStatus").textContent = tripStatusText();
   setupWorldClock();
-  renderToday();
-  renderItinerary();
-  renderMapFilters();
+  renderDayPlan();
   initializeMap();
   renderBookingFilters();
   renderBookings();
@@ -857,6 +962,7 @@ function init() {
   renderExpenses();
   setupCurrencyConverter();
   setupExpenseModal();
+  setupDayNavigation();
   setupNavigation();
   setupInstall();
   updateConnectionStatus();

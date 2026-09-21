@@ -110,7 +110,7 @@ const TRIP_DAYS = [
       ]
     },
     transfers: [
-      { mode: "Taxi Arthur", route: "Les Chapieux → Bourg-Saint-Maurice", time: "3:15 PM · driver waits 30 min", duration: "About 40 min", status: "booked", detail: "€80. Backup September shuttles are listed at 5:20, 5:50, and 6:20 PM; recheck near travel." }
+      { mode: "Taxi Arthur", route: "Les Chapieux → Bourg-Saint-Maurice", time: "3:15 PM · driver waits 30 min", duration: "About 40 min", status: "booked", phase: "after", detail: "€80. Backup September shuttles are listed at 5:20, 5:50, and 6:20 PM; recheck near travel." }
     ],
     lodging: { name: "Hostellerie du Petit Saint-Bernard", place: "Bourg-Saint-Maurice", price: "$255.72", status: "booked" }
   },
@@ -149,8 +149,8 @@ const TRIP_DAYS = [
       ]
     },
     transfers: [
-      { mode: "Taxi Arthur", route: "Bourg-Saint-Maurice → Ville des Glaciers", time: "7:00 AM", duration: "Then about 20 min walk to Mottets", status: "booked", detail: "€95." },
-      { mode: "931 orange bus", route: "La Visaille → Courmayeur", time: "After the hike", duration: "About 23 min", status: "local", detail: "Free service is expected through September 27, 2026; verify timetable near travel." }
+      { mode: "Taxi Arthur", route: "Bourg-Saint-Maurice → Ville des Glaciers", time: "7:00 AM", duration: "Then about 20 min walk to Mottets", status: "booked", phase: "before", detail: "€95." },
+      { mode: "931 orange bus", route: "La Visaille → Courmayeur", time: "After the hike", duration: "About 23 min", status: "local", phase: "after", detail: "Free service is expected through September 27, 2026; verify timetable near travel." }
     ],
     lodging: { name: "iH Hotels Courmayeur Mont Blanc", place: "Courmayeur", price: "$250.70 · breakfast included", status: "booked" }
   },
@@ -190,8 +190,8 @@ const TRIP_DAYS = [
       ]
     },
     transfers: [
-      { mode: "Val Ferret bus", route: "Courmayeur → Arp Nouvaz", time: "Aim for 8:00 AM", duration: "About 30 min", status: "local", detail: "Free, no reservation expected. Confirm departure at the hotel." },
-      { mode: "Swiss PostBus", route: "La Fouly → Orsières → Champex-Lac", time: "After the hike", duration: "One transfer", status: "local", detail: "Buy in SBB Mobile or at the stop." }
+      { mode: "Val Ferret bus", route: "Courmayeur → Arp Nouvaz", time: "Aim for 8:00 AM", duration: "About 30 min", status: "local", phase: "before", detail: "Free, no reservation expected. Confirm departure at the hotel." },
+      { mode: "Swiss PostBus", route: "La Fouly → Orsières → Champex-Lac", time: "After the hike", duration: "One transfer", status: "local", phase: "after", detail: "Buy in SBB Mobile or at the stop." }
     ],
     lodging: { name: "Pension En Plein Air", place: "Champex-Lac", price: "$437.66", status: "booked" }
   },
@@ -229,7 +229,7 @@ const TRIP_DAYS = [
       ]
     },
     transfers: [
-      { mode: "Bus 213", route: "Trient → Martigny", time: "After the hike", duration: "Check SBB on the day", status: "local", detail: "No reservation. Buy in SBB Mobile." }
+      { mode: "Bus 213", route: "Trient → Martigny", time: "After the hike", duration: "Check SBB on the day", status: "local", phase: "after", detail: "No reservation. Buy in SBB Mobile." }
     ],
     lodging: { name: "Hôtel de la Poste", place: "Martigny", price: "CHF 220 · two twin rooms", status: "booked" }
   },
@@ -268,8 +268,8 @@ const TRIP_DAYS = [
       ]
     },
     transfers: [
-      { mode: "Bus 213", route: "Martigny → Trient", time: "About 7:30 AM", duration: "Check SBB on the day", status: "local" },
-      { mode: "TER train", route: "Montroc-le-Planet → Chamonix", time: "After the hike", duration: "Check SNCF on the day", status: "local", detail: "Direct toward Saint-Gervais; do not travel north to Vallorcine first." }
+      { mode: "Bus 213", route: "Martigny → Trient", time: "About 7:30 AM", duration: "Check SBB on the day", status: "local", phase: "before" },
+      { mode: "TER train", route: "Montroc-le-Planet → Chamonix", time: "After the hike", duration: "Check SNCF on the day", status: "local", phase: "after", detail: "Direct toward Saint-Gervais; do not travel north to Vallorcine first." }
     ],
     lodging: { name: "Hôtel de L'Arve", place: "Chamonix", price: "€239.80 · family room · breakfast", status: "booked" }
   }
