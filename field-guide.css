@@ -229,12 +229,12 @@ a {
 
 .hero h1 {
   margin: 3px 0 12px;
-  max-width: 8ch;
-  font-size: clamp(4.7rem, 23vw, 9.5rem);
+  max-width: 14ch;
+  font-size: clamp(2.4rem, 11vw, 5rem);
   font-style: italic;
   font-weight: 700;
-  line-height: .72;
-  letter-spacing: -.1em;
+  line-height: .88;
+  letter-spacing: -.06em;
   text-shadow: 0 14px 34px rgba(0, 0, 0, .45);
 }
 
@@ -1047,10 +1047,33 @@ a {
 }
 
 .stop-row input {
-  width: 20px;
-  height: 20px;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
   margin: 0;
-  accent-color: var(--moss);
+  border: 2px solid var(--line-strong);
+  border-radius: 6px;
+  background: rgba(243, 234, 212, 0.06);
+  cursor: pointer;
+  transition: all 180ms var(--ease);
+  position: relative;
+}
+
+.stop-row input:checked {
+  background: var(--moss);
+  border-color: var(--moss);
+}
+
+.stop-row input:checked::after {
+  content: "✓";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 900;
 }
 
 .stop-number {
@@ -1810,11 +1833,34 @@ select:focus {
 }
 
 .check-list input {
-  width: 20px;
-  height: 20px;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
   min-height: 0;
   margin: 2px 0 0;
-  accent-color: var(--moss);
+  border: 2px solid var(--line-strong);
+  border-radius: 6px;
+  background: rgba(243, 234, 212, 0.06);
+  cursor: pointer;
+  transition: all 180ms var(--ease);
+  position: relative;
+}
+
+.check-list input:checked {
+  background: var(--moss);
+  border-color: var(--moss);
+}
+
+.check-list input:checked::after {
+  content: "✓";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  color: var(--ink);
+  font-size: 0.85rem;
+  font-weight: 900;
 }
 
 .check-list .done span {
