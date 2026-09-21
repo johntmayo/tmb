@@ -651,7 +651,10 @@ function renderBookingFilters() {
 }
 
 function renderBookings() {
-  let bookings = allBookings();
+  const everyBooking = allBookings();
+  const attentionCount = everyBooking.filter((item) => ["todo", "confirm"].includes(item.status)).length;
+  $("#bookingSummary").textContent = `${everyBooking.length} bookings & rides · ${attentionCount || "none"} need${attentionCount === 1 ? "s" : ""} attention`;
+  let bookings = everyBooking;
   if (activeBookingFilter === "todo") {
     bookings = bookings.filter((item) => ["todo", "confirm"].includes(item.status));
   } else if (activeBookingFilter !== "all") {
@@ -730,13 +733,24 @@ function renderReferenceCard() {
 }
 
 function renderCrew() {
-  $("#crewGrid").innerHTML = Array.from({ length: 6 }, (_, index) => `
+  $("#crewGrid").innerHTML = CREW_PROFILES.map((profile, index) => `
     <article class="crew-profile">
-      <div class="crew-photo" aria-label="Photo coming soon"><span>${String(index + 1).padStart(2, "0")}</span></div>
-      <div>
-        <p>Company member ${String(index + 1).padStart(2, "0")}</p>
-        <h3>Classified for now</h3>
-        <span>Portrait, title, and highly questionable biography forthcoming.</span>
+      ${profile.image ? `
+        <button class="crew-photo" type="button" data-crew-photo="${index}" aria-label="View ${escapeHtml(profile.name)}’s photo full screen">
+          <img src="${escapeHtml(profile.image)}" alt="${escapeHtml(profile.name)}, ${escapeHtml(profile.title)}">
+          <span>Tap to inspect</span>
+        </button>
+      ` : `
+        <div class="crew-photo crew-photo-placeholder" aria-label="${escapeHtml(profile.name)}’s photo coming soon">
+          <span>${profile.name.split(/\s+/).map((part) => part[0]).join("")}</span>
+          <small>Portrait incoming</small>
+        </div>
+      `}
+      <div class="crew-profile-copy">
+        <p>Personnel file ${String(index + 1).padStart(2, "0")}</p>
+        <h3>${escapeHtml(profile.name)}</h3>
+        <strong>${escapeHtml(profile.title)}</strong>
+        <span>${escapeHtml(profile.bio)}</span>
       </div>
     </article>
   `).join("");
@@ -745,23 +759,43 @@ function renderCrew() {
 function setupSpecialViews() {
   const referenceViewer = $("#referenceCardViewer");
   const crewViewer = $("#crewViewer");
+  const photoViewer = $("#photoViewer");
+  const overlayViewers = [referenceViewer, crewViewer, photoViewer];
   const setOpen = (viewer, open) => {
     viewer.hidden = !open;
-    document.body.classList.toggle("overlay-open", open);
+    document.body.classList.toggle("overlay-open", overlayViewers.some((item) => !item.hidden));
   };
 
   $("#openReferenceCardBtn").addEventListener("click", () => setOpen(referenceViewer, true));
   $("#closeReferenceCardBtn").addEventListener("click", () => setOpen(referenceViewer, false));
   $("#printReferenceCardBtn").addEventListener("click", () => window.print());
-  $("#openCrewBtn").addEventListener("click", () => setOpen(crewViewer, true));
+  $$("[data-open-crew]").forEach((button) => {
+    button.addEventListener("click", () => setOpen(crewViewer, true));
+  });
   $("#closeCrewBtn").addEventListener("click", () => setOpen(crewViewer, false));
-  [referenceViewer, crewViewer].forEach((viewer) => {
+  $("#closePhotoViewerBtn").addEventListener("click", () => setOpen(photoViewer, false));
+  $("#crewGrid").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-crew-photo]");
+    if (!button) return;
+    const profile = CREW_PROFILES[Number(button.dataset.crewPhoto)];
+    if (!profile?.image) return;
+    $("#fullScreenCrewPhoto").src = profile.image;
+    $("#fullScreenCrewPhoto").alt = `${profile.name}, ${profile.title}`;
+    $("#photoViewerName").textContent = profile.name;
+    $("#photoViewerTitle").textContent = profile.title;
+    setOpen(photoViewer, true);
+  });
+  overlayViewers.forEach((viewer) => {
     viewer.addEventListener("click", (event) => {
       if (event.target === viewer) setOpen(viewer, false);
     });
   });
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape") return;
+    if (!photoViewer.hidden) {
+      setOpen(photoViewer, false);
+      return;
+    }
     setOpen(referenceViewer, false);
     setOpen(crewViewer, false);
   });

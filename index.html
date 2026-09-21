@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://unpkg.com">
   <link rel="preconnect" href="https://tile.openstreetmap.org">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-  <link rel="stylesheet" href="field-guide.css?v=13">
+  <link rel="stylesheet" href="field-guide.css?v=14">
 </head>
 <body>
   <div class="splash" id="splash" aria-hidden="true">
@@ -138,17 +138,25 @@
           </article>
         </div>
 
-        <div class="section-heading compact">
-          <p class="kicker">Reservations & rides</p>
-          <h2>Bookings</h2>
-          <p>Shared logistics first; John and Rachel’s flights stay at the bottom.</p>
-        </div>
-        <article class="privacy-card">
-          <div class="privacy-icon">⌁</div>
-          <div><strong>Private pocket</strong><p>Nothing typed into a private note is uploaded by this static app.</p></div>
-        </article>
-        <div class="filter-row" id="bookingFilters" aria-label="Filter bookings"></div>
-        <div class="booking-list" id="bookingList"></div>
+        <details class="booking-section">
+          <summary class="booking-section-summary">
+            <div>
+              <p class="kicker">Reservations & rides</p>
+              <h2>Bookings</h2>
+              <p id="bookingSummary">Loading reservations…</p>
+            </div>
+            <span class="booking-toggle"><span>Show</span><b>＋</b></span>
+          </summary>
+          <div class="booking-section-body">
+            <p class="booking-intro">Shared logistics first; John and Rachel’s flights stay at the bottom.</p>
+            <article class="privacy-card">
+              <div class="privacy-icon">⌁</div>
+              <div><strong>Private pocket</strong><p>Nothing typed into a private note is uploaded by this static app.</p></div>
+            </article>
+            <div class="filter-row" id="bookingFilters" aria-label="Filter bookings"></div>
+            <div class="booking-list" id="bookingList"></div>
+          </div>
+        </details>
         <div class="section-heading compact">
           <p class="kicker">Local trail ledger</p>
           <h2>Split expenses</h2>
@@ -176,6 +184,15 @@
           <p class="kicker">Before & during</p>
           <h2>Prep and crew</h2>
         </div>
+        <article class="crew-launch">
+          <div class="crew-launch-mark"><span>06</span><b>MBTC</b></div>
+          <div>
+            <span class="card-label">Personnel files</span>
+            <h3>Meet the Touring Company</h3>
+            <p>Six hikers. Six highly questionable dossiers.</p>
+          </div>
+          <button class="primary-btn" type="button" data-open-crew>Open profiles</button>
+        </article>
         <div class="info-grid">
           <article class="info-card">
             <span class="card-label">Before departure</span>
@@ -206,7 +223,7 @@
 
     <footer>
       <strong>Rachel's Friggin 40th</strong>
-      <button class="company-secret" id="openCrewBtn" type="button">Mont Blanc Touring Company</button>
+      <button class="company-secret" type="button" data-open-crew>Mont Blanc Touring Company</button>
     </footer>
   </div>
 
@@ -235,9 +252,17 @@
         </div>
         <button class="icon-btn" id="closeCrewBtn" type="button" aria-label="Close crew profiles">×</button>
       </div>
-      <p class="crew-intro">Six hikers. One mountain. Profiles coming as soon as management receives the incriminating photographs.</p>
+      <p class="crew-intro">Six hikers. One mountain. Tap a portrait to inspect the evidence.</p>
       <div class="crew-grid" id="crewGrid"></div>
     </div>
+  </div>
+
+  <div class="photo-viewer" id="photoViewer" role="dialog" aria-modal="true" aria-labelledby="photoViewerName" hidden>
+    <button class="icon-btn photo-viewer-close" id="closePhotoViewerBtn" type="button" aria-label="Close full-screen photo">×</button>
+    <figure>
+      <img id="fullScreenCrewPhoto" src="" alt="">
+      <figcaption><strong id="photoViewerName"></strong><span id="photoViewerTitle"></span></figcaption>
+    </figure>
   </div>
 
   <div class="modal" id="expenseModal" role="dialog" aria-modal="true" aria-labelledby="expenseModalTitle">
@@ -260,8 +285,8 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <script src="tmb-map-data.js?v=13"></script>
-  <script src="app-data.js?v=13"></script>
-  <script src="app.js?v=13"></script>
+  <script src="tmb-map-data.js?v=14"></script>
+  <script src="app-data.js?v=14"></script>
+  <script src="app.js?v=14"></script>
 </body>
 </html>
