@@ -300,7 +300,7 @@ const CREW_PROFILES = [
   {
     name: "David",
     title: "The Grease Man",
-    bio: "Known for getting in and out of slippery situations. Chest: shaved. Waist: snatched. Knees: most youthful in the Company.",
+    bio: "Known for getting in and out of slippery situations. Chest: shaved. Waist: snatched. Knees: youngest in the company.",
     image: "resources/images/crew/david.webp"
   },
   {
