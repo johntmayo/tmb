@@ -1073,8 +1073,6 @@ function init() {
   renderBookingFilters();
   renderBookings();
   renderPretripChecklist();
-  renderOpenItems();
-  renderContacts();
   renderExpenses();
   setupCurrencyConverter();
   setupExpenseModal();
@@ -1084,7 +1082,6 @@ function init() {
   updateConnectionStatus();
   window.addEventListener("online", updateConnectionStatus);
   window.addEventListener("offline", updateConnectionStatus);
-  $("#saveContactsBtn").addEventListener("click", saveContacts);
   registerServiceWorker();
   setTimeout(() => $("#splash").classList.add("hidden"), 950);
 }
