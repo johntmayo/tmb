@@ -25,14 +25,14 @@
 
   <div class="app">
     <header class="hero">
-      <img class="hero-image" src="resources/images/mountains2.jpg" alt="Mont Blanc and alpine huts">
+      <img class="hero-image" src="resources/images/places/les-houches.jpg" alt="Mont Blanc above Les Houches">
       <div class="hero-scrim"></div>
       <div class="hero-topline">
         <span>France · Italy · Switzerland</span>
         <span id="connectionBadge">Checking signal…</span>
       </div>
       <div class="hero-copy">
-        <p class="kicker">RSG 2026 · Sept 21–Oct 5</p>
+        <p class="kicker">RSG 2026 · Sept 23–28</p>
         <h1>Tiens Bon!</h1>
         <p class="dek">The Tour du Mont Blanc field guide built for the trail, the train, and the thin-signal moments between.</p>
       </div>
@@ -49,7 +49,7 @@
 
     <nav class="tabs" aria-label="Trip sections">
       <button class="tab-btn active" type="button" data-tab="today"><span>⌖</span>Today</button>
-      <button class="tab-btn" type="button" data-tab="itinerary"><span>≡</span>Trip</button>
+      <button class="tab-btn" type="button" data-tab="itinerary"><span>≡</span>Stages</button>
       <button class="tab-btn" type="button" data-tab="map"><span>△</span>Map</button>
       <button class="tab-btn" type="button" data-tab="wallet"><span>▣</span>Wallet</button>
       <button class="tab-btn" type="button" data-tab="field"><span>＋</span>Field</button>
@@ -57,26 +57,35 @@
 
     <main>
       <section class="tab-panel active" id="todayPanel">
+        <div class="world-clock" aria-label="Current time in Los Angeles and the Alps">
+          <article><span>Los Angeles</span><strong id="losAngelesTime">--:--</strong><small id="losAngelesDate"></small></article>
+          <div class="clock-flight">↗ <span>9 hr</span></div>
+          <article><span>Alps local</span><strong id="alpsTime">--:--</strong><small id="alpsDate"></small></article>
+        </div>
         <div id="todayBrief"></div>
       </section>
 
       <section class="tab-panel" id="itineraryPanel">
         <div class="section-heading">
-          <p class="kicker">Fifteen days · six stages</p>
-          <h2>The whole route</h2>
+          <p class="kicker">Six days · three countries</p>
+          <h2>The hiking stages</h2>
           <p>Critical hiking numbers stay visible before you open a card.</p>
         </div>
-        <div class="filter-row" id="itineraryFilters" aria-label="Filter itinerary"></div>
         <div class="timeline" id="timeline"></div>
       </section>
 
       <section class="tab-panel" id="mapPanel">
         <div class="section-heading">
-          <p class="kicker">38 mapped places</p>
+          <p class="kicker">Six GPX stages · seven overnights</p>
           <h2>Trail map</h2>
-          <p>Supplied GPX tracks and UMAP waypoints over OpenStreetMap. This is a trip overview, not your sole navigation source.</p>
+          <p>Supplied GPX tracks, confirmed waypoints, transfers, and every overnight. This is a trip overview, not your sole navigation source.</p>
         </div>
         <div class="map-toolbar" id="mapFilters" aria-label="Choose map day"></div>
+        <div class="map-legend" aria-label="Map legend">
+          <span><i class="legend-line"></i> Hiking track</span>
+          <span><i class="legend-line dashed"></i> Transfer</span>
+          <span><i class="legend-lodge">⌂</i> Overnight</span>
+        </div>
         <div class="map-shell">
           <div id="map" aria-label="Interactive Tour du Mont Blanc map"></div>
           <div class="map-fallback" id="mapFallback" hidden>
@@ -84,6 +93,7 @@
             <p>Your itinerary and waypoint directory still work offline.</p>
           </div>
         </div>
+        <p class="map-credit">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a> · rendered with Leaflet</p>
         <div class="map-note">
           <span>Offline plan</span>
           <p>Download the route in Organic Maps or Maps.me before departure. OpenStreetMap tiles are not guaranteed offline.</p>
@@ -101,6 +111,19 @@
         <article class="privacy-card">
           <div class="privacy-icon">⌁</div>
           <div><strong>Private pocket</strong><p>Nothing typed into a private note is uploaded by this static app.</p></div>
+        </article>
+        <article class="converter-card">
+          <div class="converter-heading">
+            <div><span class="card-label">Trail currency</span><h3>Quick converter</h3></div>
+            <small id="currencyRateStatus">Loading rates…</small>
+          </div>
+          <div class="converter-controls">
+            <label>Amount <input id="currencyAmount" type="number" inputmode="decimal" min="0" step="0.01" value="100"></label>
+            <label>From <select id="currencyFrom"><option value="USD">USD · United States</option><option value="EUR">EUR · France & Italy</option><option value="CHF">CHF · Switzerland</option></select></label>
+            <label>To <select id="currencyTo"><option value="EUR">EUR · France & Italy</option><option value="CHF">CHF · Switzerland</option><option value="USD">USD · United States</option></select></label>
+            <button class="swap-btn" id="swapCurrencyBtn" type="button" aria-label="Swap currencies">⇄ Swap currencies</button>
+          </div>
+          <output class="conversion-result" id="currencyResult">—</output>
         </article>
         <div class="filter-row" id="bookingFilters" aria-label="Filter bookings"></div>
         <div class="booking-list" id="bookingList"></div>
@@ -143,7 +166,7 @@
           <article class="info-card">
             <span class="card-label">Weather check</span>
             <div class="link-list">
-              <a href="https://www.mountain-forecast.com/peaks/Mont-Blanc/forecasts/4808" target="_blank" rel="noopener">Mont Blanc mountain forecast <span>↗</span></a>
+              <a href="https://www.mountain-forecast.com/peaks/Mont-Blanc/forecasts/2000" target="_blank" rel="noopener">Mont Blanc forecast · 2,000 m <span>↗</span></a>
               <a href="https://meteofrance.com/previsions-meteo-france/chamonix-mont-blanc/74400" target="_blank" rel="noopener">Météo-France Chamonix <span>↗</span></a>
               <a href="https://www.meteoswiss.admin.ch/local-forecasts/champex-lac/1938.html" target="_blank" rel="noopener">MeteoSwiss Champex <span>↗</span></a>
             </div>

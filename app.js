@@ -3,13 +3,14 @@ const STORAGE = {
   progress: "tmb-waypoint-progress-v2",
   checklist: "tmb-checklist-v2",
   contacts: "tmb-contacts-v2",
-  expenses: "tmb-expenses-v2"
+  expenses: "tmb-expenses-v2",
+  currencyRates: "tmb-currency-rates-v1"
 };
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+const HIKING_DAYS = TRIP_DAYS.filter((day) => day.hikeDay);
 
-let activeItineraryFilter = "all";
 let activeBookingFilter = "all";
 let activeMapDay = "all";
 let privateNotes = loadJson(STORAGE.notes, {});
@@ -17,6 +18,7 @@ let waypointProgress = loadJson(STORAGE.progress, {});
 let checklist = loadJson(STORAGE.checklist, {});
 let contacts = loadJson(STORAGE.contacts, DEFAULT_CONTACTS);
 let expenses = loadJson(STORAGE.expenses, []);
+let currencyRates = loadJson(STORAGE.currencyRates, null);
 let deferredInstallPrompt = null;
 let map = null;
 let mapFeatures = null;
@@ -75,26 +77,22 @@ function statusClass(status) {
 
 function tripStatusText() {
   const today = todayKey();
-  const first = TRIP_DAYS[0].date;
-  const last = TRIP_DAYS.at(-1).date;
+  const first = HIKING_DAYS[0].date;
+  const last = HIKING_DAYS.at(-1).date;
   if (today < first) {
     const days = dayDifference(today, first);
-    return `${days} day${days === 1 ? "" : "s"} to departure`;
+    return `${days} day${days === 1 ? "" : "s"} to Hike 1`;
   }
-  if (today > last) return "Trip complete";
-  const day = TRIP_DAYS.find((item) => item.date === today);
-  return day ? `Today · ${day.dateLabel} · ${day.title}` : "Trip in progress";
+  if (today > last) return "Six-day hike complete";
+  const day = HIKING_DAYS.find((item) => item.date === today);
+  return day ? `Today · Hike ${day.hikeDay} · ${day.title}` : "TMB in progress";
 }
 
 function focusDay() {
   const today = todayKey();
-  return TRIP_DAYS.find((day) => day.date === today)
-    || (today < TRIP_DAYS[0].date ? TRIP_DAYS[0] : TRIP_DAYS.at(-1));
-}
-
-function nextHike(fromDate = todayKey()) {
-  return TRIP_DAYS.find((day) => day.hikeDay && day.date >= fromDate)
-    || TRIP_DAYS.find((day) => day.hikeDay);
+  return HIKING_DAYS.find((day) => day.date === today)
+    || HIKING_DAYS.find((day) => day.date > today)
+    || HIKING_DAYS.at(-1);
 }
 
 function statTiles(hike, compact = false) {
@@ -239,30 +237,20 @@ function renderToday() {
   const day = focusDay();
   const today = todayKey();
   let label = "Today";
-  if (today < TRIP_DAYS[0].date) label = `Next up · in ${dayDifference(today, day.date)} day`;
-  if (today > TRIP_DAYS.at(-1).date) label = "Trip archive";
+  if (today < HIKING_DAYS[0].date) {
+    const days = dayDifference(today, day.date);
+    label = `Next up · in ${days} day${days === 1 ? "" : "s"}`;
+  }
+  if (today > HIKING_DAYS.at(-1).date) label = "Hike archive";
 
-  let content = `
+  const content = `
     <div class="section-heading today-heading">
       <p class="kicker">Trail command</p>
-      <h2>${today < TRIP_DAYS[0].date ? "Ready when you are." : "Today, at a glance."}</h2>
+      <h2>${today < HIKING_DAYS[0].date ? "Ready when you are." : "Today, at a glance."}</h2>
       <p>Big numbers, stop order, and transfers without digging.</p>
     </div>
     ${fieldBrief(day, label)}
   `;
-
-  if (!day.hike) {
-    const upcoming = nextHike(day.date);
-    if (upcoming && upcoming.tripDay !== day.tripDay) {
-      content += `
-        <div class="section-heading compact">
-          <p class="kicker">Next trail stage</p>
-          <h2>Know the day before it starts.</h2>
-        </div>
-        ${fieldBrief(upcoming, `in ${Math.max(0, dayDifference(today, upcoming.date))} days`)}
-      `;
-    }
-  }
 
   $("#todayBrief").innerHTML = content;
   setupRenderedInteractions($("#todayBrief"));
@@ -308,23 +296,8 @@ function itineraryCard(day) {
   `;
 }
 
-function renderItineraryFilters() {
-  const filters = [
-    ["all", "All 15 days"],
-    ["hike", "6 hikes"],
-    ["travel", "Travel"],
-    ["city", "City"]
-  ];
-  $("#itineraryFilters").innerHTML = filters.map(([value, label]) => `
-    <button class="filter-btn ${activeItineraryFilter === value ? "active" : ""}" type="button" data-itinerary-filter="${value}">${label}</button>
-  `).join("");
-}
-
 function renderItinerary() {
-  const days = activeItineraryFilter === "all"
-    ? TRIP_DAYS
-    : TRIP_DAYS.filter((day) => day.kind === activeItineraryFilter);
-  $("#timeline").innerHTML = days.map(itineraryCard).join("");
+  $("#timeline").innerHTML = HIKING_DAYS.map(itineraryCard).join("");
   setupRenderedInteractions($("#timeline"));
 }
 
@@ -392,7 +365,7 @@ async function copyBriefing(tripDay) {
 
 function renderMapFilters() {
   const options = [["all", "All"]];
-  TRIP_DAYS.filter((day) => day.hikeDay).forEach((day) => options.push([String(day.mapDay), `Hike ${day.hikeDay}`]));
+  HIKING_DAYS.forEach((day) => options.push([String(day.mapDay), `Hike ${day.hikeDay}`]));
   $("#mapFilters").innerHTML = options.map(([value, label]) => `
     <button class="filter-btn ${activeMapDay === value ? "active" : ""}" type="button" data-map-filter="${value}">${label}</button>
   `).join("");
@@ -405,10 +378,9 @@ function initializeMap() {
     renderWaypointDirectory();
     return;
   }
-  map = L.map("map", { zoomControl: true, scrollWheelZoom: false });
+  map = L.map("map", { zoomControl: true, scrollWheelZoom: false, attributionControl: false });
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 18,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    maxZoom: 18
   }).addTo(map);
   updateMap();
 }
@@ -417,30 +389,54 @@ function updateMap() {
   renderWaypointDirectory();
   if (!map || !window.TMB_MAP_DATA) return;
   if (mapFeatures) mapFeatures.remove();
+  const allFeatures = TMB_MAP_DATA.features.filter((feature, index, features) => {
+    if (!feature.properties.lodging) return true;
+    return features.findIndex((candidate) => (
+      candidate.properties.lodging
+      && candidate.properties.name === feature.properties.name
+    )) === index;
+  });
   const filtered = activeMapDay === "all"
-    ? TMB_MAP_DATA
+    ? { ...TMB_MAP_DATA, features: allFeatures }
     : {
         ...TMB_MAP_DATA,
         features: TMB_MAP_DATA.features.filter((feature) => String(feature.properties.mapDay) === activeMapDay)
       };
-  const colors = { 1: "#f2bf45", 2: "#e57e49", 3: "#8fc7d9", 4: "#85b86d", 5: "#d8b4e2", 6: "#f1e5c6" };
+  const routeColor = "#ed2d3f";
   mapFeatures = L.geoJSON(filtered, {
     style: (feature) => ({
-      color: colors[feature.properties.mapDay] || "#f2bf45",
-      weight: feature.properties.transport ? 3 : 4,
-      opacity: 0.86,
-      dashArray: feature.properties.transport ? "7 7" : null
+      color: routeColor,
+      weight: feature.properties.transport ? 4 : 6,
+      opacity: 1,
+      dashArray: feature.properties.transport ? "10 8" : null,
+      lineCap: "round",
+      lineJoin: "round"
     }),
-    pointToLayer: (feature, latlng) => L.circleMarker(latlng, {
-      radius: 7,
-      color: "#071710",
-      weight: 2,
-      fillColor: colors[feature.properties.mapDay] || "#f2bf45",
-      fillOpacity: 1
-    }),
+    pointToLayer: (feature, latlng) => {
+      if (feature.properties.lodging) {
+        return L.marker(latlng, {
+          title: feature.properties.name,
+          alt: `Overnight: ${feature.properties.name}`,
+          icon: L.divIcon({
+            className: "lodging-marker",
+            html: "<span><b>⌂</b></span>",
+            iconSize: [36, 42],
+            iconAnchor: [18, 39],
+            popupAnchor: [0, -35]
+          })
+        });
+      }
+      return L.circleMarker(latlng, {
+        radius: 7,
+        color: "#071710",
+        weight: 2,
+        fillColor: "#ffd23f",
+        fillOpacity: 1
+      });
+    },
     onEachFeature: (feature, layer) => {
       const name = feature.properties.name || "Route line";
-      const day = feature.properties.mapDay ? `Hike ${feature.properties.mapDay}` : "Travel";
+      const day = feature.properties.lodging ? "Overnight" : feature.properties.mapDay ? `Hike ${feature.properties.mapDay}` : "Trail";
       const coords = feature.geometry.type === "Point"
         ? `<a href="https://www.google.com/maps/search/?api=1&query=${feature.geometry.coordinates[1]},${feature.geometry.coordinates[0]}" target="_blank" rel="noopener">Open in maps ↗</a>`
         : "";
@@ -459,8 +455,8 @@ function updateMap() {
 
 function renderWaypointDirectory() {
   const hikes = activeMapDay === "all"
-    ? TRIP_DAYS.filter((day) => day.hikeDay)
-    : TRIP_DAYS.filter((day) => String(day.mapDay) === activeMapDay);
+    ? HIKING_DAYS
+    : HIKING_DAYS.filter((day) => String(day.mapDay) === activeMapDay);
   $("#waypointDirectory").innerHTML = hikes.map((day) => `
     <details ${activeMapDay !== "all" ? "open" : ""}>
       <summary><span>Hike ${day.hikeDay}</span><strong>${escapeHtml(day.title)}</strong></summary>
@@ -479,7 +475,11 @@ function renderWaypointDirectory() {
 
 function allBookings() {
   const rows = [];
-  TRIP_DAYS.forEach((day) => {
+  const approachDay = TRIP_DAYS.find((day) => day.tripDay === 2);
+  const flightDay = TRIP_DAYS.find((day) => day.tripDay === 1);
+  const sharedDays = [approachDay, ...HIKING_DAYS].filter(Boolean);
+
+  sharedDays.forEach((day) => {
     if (day.lodging) {
       rows.push({
         id: `lodging-${day.tripDay}`,
@@ -497,15 +497,28 @@ function allBookings() {
         date: day.dateLabel,
         name: `${leg.mode} · ${leg.route}`,
         detail: `${leg.time} · ${leg.duration}${leg.detail ? ` · ${leg.detail}` : ""}`,
-        status: leg.status
+        status: leg.status,
+        audience: leg.audience
       });
+    });
+  });
+
+  flightDay?.transfers?.forEach((leg, index) => {
+    rows.push({
+      id: `flight-${index}`,
+      type: "flight",
+      date: flightDay.dateLabel,
+      name: `${leg.mode} · ${leg.route}`,
+      detail: `${leg.time} · ${leg.duration}`,
+      status: leg.status,
+      audience: leg.audience || "John & Rachel"
     });
   });
   return rows;
 }
 
 function renderBookingFilters() {
-  const options = [["all", "All"], ["lodging", "Lodging"], ["transport", "Transport"], ["todo", "Needs action"]];
+  const options = [["all", "All"], ["lodging", "Lodging"], ["transport", "Transport"], ["flight", "John & Rachel flights"], ["todo", "Needs action"]];
   $("#bookingFilters").innerHTML = options.map(([value, label]) => `
     <button class="filter-btn ${activeBookingFilter === value ? "active" : ""}" type="button" data-booking-filter="${value}">${label}</button>
   `).join("");
@@ -524,6 +537,7 @@ function renderBookings() {
         <span class="card-label">${item.date} · ${item.type}</span>
         <span class="status ${statusClass(item.status)}">${statusLabel(item.status)}</span>
       </div>
+      ${item.audience ? `<span class="audience-tag">${escapeHtml(item.audience)} only</span>` : ""}
       <h3>${escapeHtml(item.name)}</h3>
       <p>${escapeHtml(item.detail)}</p>
       <label class="private-note">
@@ -586,6 +600,80 @@ function renderPayerOptions() {
 
 function formatCurrency(amount, currency) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(amount || 0);
+}
+
+function renderWorldClock() {
+  const now = new Date();
+  const clocks = [
+    ["losAngeles", "America/Los_Angeles"],
+    ["alps", "Europe/Paris"]
+  ];
+  clocks.forEach(([id, timeZone]) => {
+    $(`#${id}Time`).textContent = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      hour: "numeric",
+      minute: "2-digit",
+      second: "2-digit"
+    }).format(now);
+    $(`#${id}Date`).textContent = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      weekday: "short",
+      month: "short",
+      day: "numeric",
+      timeZoneName: "short"
+    }).format(now);
+  });
+}
+
+function setupWorldClock() {
+  renderWorldClock();
+  setInterval(renderWorldClock, 1000);
+}
+
+function renderCurrencyConversion() {
+  const amount = Number($("#currencyAmount").value);
+  const from = $("#currencyFrom").value;
+  const to = $("#currencyTo").value;
+  if (!currencyRates?.rates || !Number.isFinite(amount)) {
+    $("#currencyResult").textContent = "Connect once to load current rates";
+    return;
+  }
+  const rates = { USD: 1, ...currencyRates.rates };
+  const converted = (amount / rates[from]) * rates[to];
+  $("#currencyResult").textContent = `${formatCurrency(amount, from)} = ${formatCurrency(converted, to)}`;
+}
+
+async function refreshCurrencyRates() {
+  const status = $("#currencyRateStatus");
+  if (currencyRates?.rates) {
+    status.textContent = `Rates from ${currencyRates.date}`;
+    renderCurrencyConversion();
+  }
+  try {
+    const response = await fetch("https://api.frankfurter.dev/v1/latest?from=USD&to=EUR,CHF");
+    if (!response.ok) throw new Error("Rate request failed");
+    const data = await response.json();
+    currencyRates = { date: data.date, rates: data.rates };
+    saveJson(STORAGE.currencyRates, currencyRates);
+    status.textContent = `Rates from ${data.date}`;
+    renderCurrencyConversion();
+  } catch {
+    status.textContent = currencyRates?.rates ? `Cached rates · ${currencyRates.date}` : "Rates unavailable offline";
+  }
+}
+
+function setupCurrencyConverter() {
+  ["currencyAmount", "currencyFrom", "currencyTo"].forEach((id) => {
+    $(`#${id}`).addEventListener("input", renderCurrencyConversion);
+    $(`#${id}`).addEventListener("change", renderCurrencyConversion);
+  });
+  $("#swapCurrencyBtn").addEventListener("click", () => {
+    const from = $("#currencyFrom");
+    const to = $("#currencyTo");
+    [from.value, to.value] = [to.value, from.value];
+    renderCurrencyConversion();
+  });
+  refreshCurrencyRates();
 }
 
 function expenseGroups() {
@@ -702,13 +790,6 @@ function setupNavigation() {
       scrollToPanel(button.dataset.tab);
     });
   });
-  $("#itineraryFilters").addEventListener("click", (event) => {
-    const button = event.target.closest("[data-itinerary-filter]");
-    if (!button) return;
-    activeItineraryFilter = button.dataset.itineraryFilter;
-    renderItineraryFilters();
-    renderItinerary();
-  });
   $("#bookingFilters").addEventListener("click", (event) => {
     const button = event.target.closest("[data-booking-filter]");
     if (!button) return;
@@ -763,8 +844,8 @@ function registerServiceWorker() {
 
 function init() {
   $("#tripStatus").textContent = tripStatusText();
+  setupWorldClock();
   renderToday();
-  renderItineraryFilters();
   renderItinerary();
   renderMapFilters();
   initializeMap();
@@ -774,6 +855,7 @@ function init() {
   renderOpenItems();
   renderContacts();
   renderExpenses();
+  setupCurrencyConverter();
   setupExpenseModal();
   setupNavigation();
   setupInstall();

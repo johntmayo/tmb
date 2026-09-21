@@ -11,8 +11,8 @@ const TRIP_DAYS = [
     image: "resources/images/places/flight-to-geneva.jpg",
     fallbackImage: "resources/images/The-view-of-the-Mont-Blanc-scaled.jpg",
     transfers: [
-      { mode: "Flight", route: "LAX → Paris CDG", time: "6:00 PM departure", duration: "Overnight", status: "booked" },
-      { mode: "Flight", route: "Paris CDG → Geneva", time: "3:00 PM Tue", duration: "1 hr 10 min", status: "booked" }
+      { mode: "Flight", route: "LAX → Paris CDG", time: "6:00 PM departure", duration: "Overnight", status: "booked", audience: "John & Rachel" },
+      { mode: "Flight", route: "Paris CDG → Geneva", time: "3:00 PM Tue", duration: "1 hr 10 min", status: "booked", audience: "John & Rachel" }
     ],
     notes: ["Land in Geneva at 4:10 PM on Tuesday, September 22."]
   },
@@ -272,104 +272,11 @@ const TRIP_DAYS = [
       { mode: "TER train", route: "Montroc-le-Planet → Chamonix", time: "After the hike", duration: "Check SNCF on the day", status: "local", detail: "Direct toward Saint-Gervais; do not travel north to Vallorcine first." }
     ],
     lodging: { name: "Hôtel de L'Arve", place: "Chamonix", price: "€239.80 · family room · breakfast", status: "booked" }
-  },
-  {
-    tripDay: 9,
-    date: "2026-09-29",
-    dateLabel: "Sep 29",
-    weekday: "Tuesday",
-    kind: "travel",
-    title: "Chamonix → Lyon",
-    location: "Lyon, France",
-    summary: "Train to Lyon, then Vieux Lyon, Presqu’île, and Croix-Rousse.",
-    image: "resources/images/places/lyon-vieux-lyon.jpg",
-    fallbackImage: "resources/images/window.jpg",
-    transfers: [{ mode: "Train", route: "Chamonix → Lyon", time: "Time to be decided", duration: "Varies by connection", status: "todo", detail: "Book in SNCF Connect." }],
-    notes: ["Maggie arrives at 1:45 PM.", "Dinner ideas: quenelles, coq au vin, and Beaujolais."]
-  },
-  {
-    tripDay: 10,
-    date: "2026-09-30",
-    dateLabel: "Sep 30",
-    weekday: "Wednesday",
-    kind: "city",
-    title: "Explore Lyon",
-    location: "Lyon, France",
-    summary: "A full city day for old passages, hilltop views, markets, and a bouchon dinner.",
-    image: "resources/images/places/lyon-croix-rousse.jpg",
-    fallbackImage: "resources/images/window.jpg",
-    notes: ["Priorities: Vieux Lyon, Presqu’île, Croix-Rousse.", "Dinner ideas: quenelles, coq au vin, and Beaujolais."]
-  },
-  {
-    tripDay: 11,
-    date: "2026-10-01",
-    dateLabel: "Oct 1",
-    weekday: "Thursday",
-    kind: "travel",
-    title: "Lyon → Paris",
-    location: "Paris, France",
-    summary: "TGV from Lyon Part-Dieu to Paris Gare de Lyon; settle into the confirmed Airbnb.",
-    image: "resources/images/places/paris-arrival.jpg",
-    fallbackImage: "resources/images/The-view-of-the-Mont-Blanc-scaled.jpg",
-    transfers: [{ mode: "TGV", route: "Lyon Part-Dieu → Paris Gare de Lyon", time: "Time to be decided", duration: "About 2 hr", status: "todo", detail: "Reservation recommended." }],
-    lodging: { name: "Paris Airbnb", place: "Paris", price: "Confirmed", status: "booked" }
-  },
-  {
-    tripDay: 12,
-    date: "2026-10-02",
-    dateLabel: "Oct 2",
-    weekday: "Friday",
-    kind: "city",
-    title: "Paris + Parra for Cuva",
-    location: "Paris, France",
-    summary: "Explore Paris, then Parra for Cuva at La Cigale.",
-    image: "resources/images/places/paris-la-cigale.jpg",
-    fallbackImage: "resources/images/window.jpg",
-    notes: ["Concert: La Cigale, 7:00 PM. Tickets purchased for the group."]
-  },
-  {
-    tripDay: 13,
-    date: "2026-10-03",
-    dateLabel: "Oct 3",
-    weekday: "Saturday",
-    kind: "city",
-    title: "Paris",
-    location: "Paris, France",
-    summary: "Open day in Paris.",
-    image: "resources/images/places/paris-streets.jpg",
-    fallbackImage: "resources/images/window.jpg"
-  },
-  {
-    tripDay: 14,
-    date: "2026-10-04",
-    dateLabel: "Oct 4",
-    weekday: "Sunday",
-    kind: "city",
-    title: "Paris",
-    location: "Paris, France",
-    summary: "Final full day; Maggie continues to La Rochelle at a time to be decided.",
-    image: "resources/images/places/paris-sunday.jpg",
-    fallbackImage: "resources/images/window.jpg"
-  },
-  {
-    tripDay: 15,
-    date: "2026-10-05",
-    dateLabel: "Oct 5",
-    weekday: "Monday",
-    kind: "travel",
-    title: "Paris → Los Angeles",
-    location: "Travel home",
-    summary: "Departure day.",
-    image: "resources/images/places/paris-departure.jpg",
-    fallbackImage: "resources/images/The-view-of-the-Mont-Blanc-scaled.jpg",
-    transfers: [{ mode: "Flight", route: "Paris → Los Angeles", time: "Check private booking note", duration: "Long-haul", status: "booked" }]
   }
 ];
 
 const OPEN_ITEMS = [
   "Download Organic Maps and the TMB area offline",
-  "Book Chamonix → Lyon train",
-  "Book Lyon → Paris TGV",
   "Confirm September bus and shuttle timetables near departure",
   "Add private confirmation codes on each traveler’s own device"
 ];

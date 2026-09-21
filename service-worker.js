@@ -1,4 +1,4 @@
-const CACHE_NAME = "tiens-bon-v2";
+const CACHE_NAME = "tiens-bon-v8";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -16,7 +16,14 @@ const APP_SHELL = [
   "./resources/images/signs.jpg",
   "./resources/images/hovel.jpg",
   "./resources/images/window.jpg",
-  "./resources/images/The-view-of-the-Mont-Blanc-scaled.jpg"
+  "./resources/images/The-view-of-the-Mont-Blanc-scaled.jpg",
+  "./resources/images/places/les-houches.jpg",
+  "./resources/images/places/col-du-tricot.jpg",
+  "./resources/images/places/col-du-bonhomme.jpg",
+  "./resources/images/places/col-de-la-seigne.jpg",
+  "./resources/images/places/grand-col-ferret.jpg",
+  "./resources/images/places/alp-bovine.jpg",
+  "./resources/images/places/aiguillette-des-posettes.jpg"
 ];
 
 self.addEventListener("install", (event) => {
@@ -54,6 +61,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  if (url.origin !== self.location.origin && url.hostname !== "unpkg.com") return;
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       const network = fetch(event.request).then((response) => {
@@ -62,7 +71,11 @@ self.addEventListener("fetch", (event) => {
         }
         return response;
       });
-      return cached || network.catch(() => caches.match("./index.html"));
+      return cached || network.catch(() => (
+        event.request.mode === "navigate"
+          ? caches.match("./index.html")
+          : new Response("", { status: 503 })
+      ));
     })
   );
 });

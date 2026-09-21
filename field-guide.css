@@ -300,6 +300,54 @@ a {
   font-size: .68rem;
 }
 
+.world-clock {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 7px;
+  align-items: stretch;
+  margin: 24px 0 -4px;
+}
+
+.world-clock article {
+  display: grid;
+  align-content: center;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(243, 234, 212, .055);
+}
+
+.world-clock span,
+.world-clock small {
+  color: var(--mist);
+  font-size: .64rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.world-clock strong {
+  margin: 2px 0;
+  font-family: var(--serif);
+  font-size: clamp(1.3rem, 7vw, 2.1rem);
+  line-height: 1;
+  letter-spacing: -.05em;
+}
+
+.clock-flight {
+  display: grid;
+  place-content: center;
+  color: var(--yellow);
+  font-size: .8rem;
+  text-align: center;
+}
+
+.clock-flight span {
+  display: block;
+  font-size: .52rem;
+}
+
 .install-btn,
 .primary-btn,
 .ghost-btn,
@@ -1002,14 +1050,86 @@ select:focus {
   box-shadow: var(--shadow);
 }
 
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: -3px 3px 10px;
+  color: var(--mist);
+  font-size: .7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.map-legend span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.legend-line {
+  width: 25px;
+  height: 0;
+  border-top: 4px solid #ed2d3f;
+  border-radius: 999px;
+}
+
+.legend-line.dashed {
+  border-top-style: dashed;
+}
+
+.legend-lodge {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-content: center;
+  border: 2px solid var(--night);
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: .9rem;
+  font-style: normal;
+}
+
 #map {
   width: 100%;
   height: 100%;
   background: #c9d6c4;
 }
 
-.leaflet-control-attribution {
-  font-size: 9px;
+.lodging-marker {
+  background: transparent;
+  border: 0;
+}
+
+.lodging-marker span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-content: center;
+  border: 3px solid var(--night);
+  border-radius: 50% 50% 50% 8px;
+  rotate: -45deg;
+  background: var(--yellow);
+  color: var(--ink);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .38);
+  font-size: 1.15rem;
+}
+
+.lodging-marker b {
+  display: block;
+  rotate: 45deg;
+}
+
+.map-credit {
+  margin: 6px 5px 0;
+  color: var(--mist);
+  font-size: .64rem;
+  text-align: right;
+}
+
+.map-credit a {
+  color: var(--paper);
 }
 
 .leaflet-popup-content-wrapper,
@@ -1140,6 +1260,96 @@ select:focus {
   margin-bottom: 14px;
   padding: 14px;
   border-radius: 22px;
+}
+
+.converter-card {
+  margin-bottom: 14px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(242, 185, 49, .1), rgba(243, 234, 212, .025)),
+    rgba(7, 25, 18, .84);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .24);
+}
+
+.converter-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+}
+
+.converter-heading h3 {
+  margin: 3px 0 0;
+  font-family: var(--serif);
+  font-size: 1.6rem;
+  letter-spacing: -.05em;
+}
+
+.converter-heading > small {
+  max-width: 11rem;
+  color: var(--mist);
+  font-size: .68rem;
+  text-align: right;
+}
+
+.converter-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.converter-controls label {
+  display: grid;
+  gap: 5px;
+  color: var(--mist);
+  font-size: .72rem;
+}
+
+.converter-controls label:first-child {
+  grid-column: span 2;
+}
+
+.swap-btn {
+  min-height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  background: rgba(243, 234, 212, .08);
+  color: var(--yellow);
+  font-size: 1.25rem;
+}
+
+.converter-controls .swap-btn {
+  grid-column: 1 / -1;
+}
+
+.conversion-result {
+  display: block;
+  margin-top: 12px;
+  padding: 13px;
+  border: 1px solid rgba(242, 185, 49, .4);
+  border-radius: 16px;
+  background: var(--yellow-soft);
+  color: var(--snow);
+  font-family: var(--serif);
+  font-size: clamp(1.45rem, 7vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -.05em;
+}
+
+.audience-tag {
+  width: fit-content;
+  padding: 5px 8px;
+  border: 1px solid rgba(143, 199, 217, .42);
+  border-radius: 999px;
+  background: rgba(143, 199, 217, .1);
+  color: var(--glacier);
+  font-size: .65rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
 
 .privacy-icon {
