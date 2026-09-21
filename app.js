@@ -1012,6 +1012,9 @@ function registerServiceWorker() {
 
 function init() {
   $("#tripStatus").textContent = tripStatusText();
+  renderReferenceCard();
+  renderCrew();
+  setupSpecialViews();
   setupWorldClock();
   renderDayPlan();
   initializeMap();
@@ -1019,15 +1022,12 @@ function init() {
   renderBookings();
   renderPretripChecklist();
   renderOpenItems();
-  renderReferenceCard();
-  renderCrew();
   renderContacts();
   renderExpenses();
   setupCurrencyConverter();
   setupExpenseModal();
   setupDayNavigation();
   setupNavigation();
-  setupSpecialViews();
   setupInstall();
   updateConnectionStatus();
   window.addEventListener("online", updateConnectionStatus);

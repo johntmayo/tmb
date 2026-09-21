@@ -1,4 +1,4 @@
-const CACHE_NAME = "mont-blanc-touring-v11";
+const CACHE_NAME = "mont-blanc-touring-v12";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -61,21 +61,30 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (url.origin !== self.location.origin && url.hostname !== "unpkg.com") return;
+  if (url.origin === self.location.origin) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request, { ignoreSearch: true }).then((cached) => (
+          cached || (event.request.mode === "navigate"
+            ? caches.match("./index.html")
+            : new Response("", { status: 503 }))
+        )))
+    );
+    return;
+  }
 
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const network = fetch(event.request).then((response) => {
-        if (response.ok && (url.origin === self.location.origin || url.hostname === "unpkg.com")) {
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
-        }
+  if (url.hostname === "unpkg.com") {
+    event.respondWith(
+      caches.match(event.request).then((cached) => cached || fetch(event.request).then((response) => {
+        if (response.ok) caches.open(CACHE_NAME).then((cache) => cache.put(event.request, response.clone()));
         return response;
-      });
-      return cached || network.catch(() => (
-        event.request.mode === "navigate"
-          ? caches.match("./index.html")
-          : new Response("", { status: 503 })
-      ));
-    })
-  );
+      }))
+    );
+  }
 });
