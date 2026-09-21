@@ -738,7 +738,6 @@ function renderCrew() {
       ${profile.image ? `
         <button class="crew-photo" type="button" data-crew-photo="${index}" aria-label="View ${escapeHtml(profile.name)}’s photo full screen">
           <img src="${escapeHtml(profile.image)}" alt="${escapeHtml(profile.name)}, ${escapeHtml(profile.title)}">
-          <span>Tap to inspect</span>
         </button>
       ` : `
         <div class="crew-photo crew-photo-placeholder" aria-label="${escapeHtml(profile.name)}’s photo coming soon">
