@@ -241,20 +241,20 @@ const TRIP_DAYS = [
     dateLabel: "Sep 28",
     weekday: "Monday",
     kind: "hike",
-    title: "Trient → Tré-le-Champ",
+    title: "Martigny → Trient → Tré-le-Champ → Chamonix",
     location: "Switzerland → France",
-    summary: "Return to Trient, climb Col de Balme, traverse Aiguillette des Posettes, then walk from Tré-le-Champ to Montroc station.",
+    summary: "Bus to Trient, climb Col de Balme, traverse Aiguillette des Posettes, hike through Tré-le-Champ to Montroc-le-Planet, then take the replacement bus to Chamonix.",
     image: "resources/images/places/aiguillette-des-posettes.jpg",
     fallbackImage: "resources/images/The-view-of-the-Mont-Blanc-scaled.jpg",
     hike: {
-      start: "About 8:15 AM",
+      start: "About 8:45 AM",
       arrival: "2:30–4:00 PM",
-      distanceMi: 8.8,
-      distanceKm: 14.2,
-      ascentFt: 3600,
-      ascentM: 1100,
-      descentFt: 3300,
-      descentM: 1000,
+      distanceMi: 9,
+      distanceKm: "14–15",
+      ascentFt: 3200,
+      ascentM: 975,
+      descentFt: 3000,
+      descentM: 915,
       duration: "5½–7 hr",
       difficulty: "Hard",
       mapped: { distanceMi: 8.8, distanceKm: 14.2, ascentFt: 3600, ascentM: 1099, descentFt: 3265, descentM: 995 },
@@ -263,13 +263,13 @@ const TRIP_DAYS = [
         { name: "Trient", detail: "Trail start", coords: [46.055949, 6.995374] },
         { name: "Col de Balme", detail: "Switzerland–France border / high point", coords: [46.026367, 6.970289] },
         { name: "Aiguillette des Posettes", detail: "Exposed scenic ridge", coords: [46.018125, 6.940251] },
-        { name: "Tré-le-Champ", detail: "Trail finish", coords: [45.996831, 6.927821] },
-        { name: "Montroc-le-Planet", detail: "TER station · about 600 m from the trail finish", coords: [45.996415, 6.934543] }
+        { name: "Tré-le-Champ", detail: "Route waypoint", coords: [45.996831, 6.927821] },
+        { name: "Montroc-le-Planet", detail: "Trail finish / replacement bus stop", coords: [45.996415, 6.934543] }
       ]
     },
     transfers: [
-      { mode: "Bus 213", route: "Martigny → Trient", time: "About 7:30 AM", duration: "Check SBB on the day", status: "local", phase: "before" },
-      { mode: "TER train", route: "Montroc-le-Planet → Chamonix", time: "After the hike", duration: "Check SNCF on the day", status: "local", phase: "after", detail: "Direct toward Saint-Gervais; do not travel north to Vallorcine first." }
+      { mode: "Bus 213", route: "Martigny Gare → Trient Village", time: "Depart about 7:56 AM", duration: "Arrive about 8:35 AM", status: "local", phase: "before", detail: "No reservation required. Buy tickets at the station or in SBB Mobile." },
+      { mode: "Replacement bus", route: "Montroc-le-Planet → Chamonix", time: "After the hike", duration: "Rail replacement service", status: "local", phase: "after", detail: "The Mont-Blanc Express rail line between this area and Chamonix is closed beginning Sep 28; replacement bus service is operating instead.", mapLine: [[45.996415, 6.934543], [45.922783, 6.873841]] }
     ],
     lodging: { name: "Hôtel de L'Arve", place: "Chamonix", price: "€239.80 · family room · breakfast", status: "booked" }
   }

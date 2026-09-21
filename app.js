@@ -524,9 +524,28 @@ function initializeMap() {
 function updateMap() {
   if (!map || !window.TMB_MAP_DATA) return;
   if (mapFeatures) mapFeatures.remove();
+  const day = selectedDay();
+  const plannedTransferLines = (day.transfers || [])
+    .filter((leg) => leg.mapLine?.length > 1)
+    .map((leg) => ({
+      type: "Feature",
+      geometry: {
+        type: "LineString",
+        coordinates: leg.mapLine.map(([latitude, longitude]) => [longitude, latitude])
+      },
+      properties: {
+        name: `${leg.mode} ${leg.route}`,
+        mapDay: day.mapDay,
+        transport: true,
+        source: "Planned transfer"
+      }
+    }));
   const filtered = {
     ...TMB_MAP_DATA,
-    features: TMB_MAP_DATA.features.filter((feature) => feature.properties.mapDay === selectedHikeDay)
+    features: [
+      ...TMB_MAP_DATA.features.filter((feature) => feature.properties.mapDay === selectedHikeDay),
+      ...plannedTransferLines
+    ]
   };
   const hikeColor = "#e63946";
   const transferColor = "#8338ec";
