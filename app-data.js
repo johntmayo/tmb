@@ -295,37 +295,37 @@ const CREW_PROFILES = [
     name: "Rachel",
     title: "Le Capitaine",
     bio: "Fearless, peerless, and dear to us all. Keep her in sight and you'll make it through. She's the toughest on the trail... also the funniest, cutest, and coolest.",
-    image: "resources/images/crew/arin.webp"
+    image: "resources/images/crew/rachel.webp"
   },
   {
     name: "David",
     title: "The Grease Man",
     bio: "Known for getting in and out of slippery situations. Chest: shaved. Waist: snatched. Knees: most youthful in the Company.",
-    image: "resources/images/crew/john.webp"
+    image: "resources/images/crew/david.webp"
   },
   {
     name: "Colleen",
     title: "The Chilanga",
     bio: "Philly-born, Mexico City-forged. Fit, flirty, and in charge if the Company gets into a bar fight. Make sure she has her passport.",
-    image: "resources/images/crew/rachel.webp"
+    image: "resources/images/crew/colleen.webp"
   },
   {
     name: "Marcel",
     title: "The Brazilian",
     bio: "Deft with his hands, steady as a mountain goat. Don't ask him for too many massages. Secret weapon: Italian citizenship.",
-    image: "resources/images/crew/david.webp"
+    image: "resources/images/crew/marcel.webp"
   },
   {
     name: "Arin",
     title: "The Georgia Peach",
     bio: "Ask her for a fit check while you're putting on yesterday's underwear. Cycled probably 40,000 miles in preparation for this trip. Quads: locked. Calves: loaded. Eyes: hazel.",
-    image: "resources/images/crew/colleen.webp"
+    image: "resources/images/crew/arin.webp"
   },
   {
     name: "John",
     title: "The Liability",
     bio: "Tell him to put that rock down, and keep a wide berth if he's muttering to himself. Ask him about his gummy bears.",
-    image: "resources/images/crew/marcel.webp"
+    image: "resources/images/crew/john.webp"
   }
 ];
 

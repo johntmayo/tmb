@@ -114,6 +114,15 @@
           </div>
           <button class="primary-btn" id="openReferenceCardBtn" type="button">Open card</button>
         </article>
+        <article class="crew-launch">
+          <div class="crew-launch-mark"><span>06</span><b>MBTC</b></div>
+          <div>
+            <span class="card-label">Personnel files</span>
+            <h3>Meet the Touring Company</h3>
+            <p>Six hikers. Six highly questionable dossiers.</p>
+          </div>
+          <button class="primary-btn" type="button" data-open-crew>Open profiles</button>
+        </article>
         <div class="info-grid toolkit-top-grid">
           <article class="info-card">
             <span class="card-label">Weather check</span>
@@ -122,19 +131,6 @@
               <a href="https://meteofrance.com/previsions-meteo-france/chamonix-mont-blanc/74400" target="_blank" rel="noopener">Météo-France Chamonix <span>↗</span></a>
               <a href="https://www.meteoswiss.admin.ch/local-forecasts/champex-lac/1938.html" target="_blank" rel="noopener">MeteoSwiss Champex <span>↗</span></a>
             </div>
-          </article>
-          <article class="converter-card">
-            <div class="converter-heading">
-              <div><span class="card-label">Trail currency</span><h3>Quick converter</h3></div>
-              <small id="currencyRateStatus">Loading rates…</small>
-            </div>
-            <div class="converter-controls">
-              <label>Amount <input id="currencyAmount" type="number" inputmode="decimal" min="0" step="0.01" value="100"></label>
-              <label>From <select id="currencyFrom"><option value="USD">USD · United States</option><option value="EUR">EUR · France & Italy</option><option value="CHF">CHF · Switzerland</option></select></label>
-              <label>To <select id="currencyTo"><option value="EUR">EUR · France & Italy</option><option value="CHF">CHF · Switzerland</option><option value="USD">USD · United States</option></select></label>
-              <button class="swap-btn" id="swapCurrencyBtn" type="button" aria-label="Swap currencies">⇄ Swap currencies</button>
-            </div>
-            <output class="conversion-result" id="currencyResult">—</output>
           </article>
         </div>
 
@@ -157,42 +153,58 @@
             <div class="booking-list" id="bookingList"></div>
           </div>
         </details>
-        <div class="section-heading compact">
-          <p class="kicker">Local trail ledger</p>
-          <h2>Split expenses</h2>
-        </div>
-        <div class="expense-grid">
-          <article class="expense-card">
-            <span class="card-label">Running total</span>
-            <div class="big-number" id="expenseTotal">$0.00</div>
-            <p id="perPersonTotal">$0.00 per person</p>
-            <div class="button-row">
-              <button class="primary-btn" type="button" id="addExpenseBtn">Add expense</button>
-              <button class="ghost-btn" type="button" id="clearExpensesBtn">Clear</button>
+        <details class="booking-section">
+          <summary class="booking-section-summary">
+            <div>
+              <p class="kicker">Currency & expenses</p>
+              <h2>Money Stuff</h2>
+              <p>Convert currencies and split trail costs.</p>
             </div>
-          </article>
-          <article class="expense-card">
-            <span class="card-label">Settle up</span>
-            <div class="settle-list" id="settleList"></div>
-          </article>
-          <article class="expense-card wide">
-            <span class="card-label">Expense log</span>
-            <div class="expense-list" id="expenseList"></div>
-          </article>
-        </div>
-        <div class="section-heading compact">
-          <p class="kicker">Before & during</p>
-          <h2>Prep and crew</h2>
-        </div>
-        <article class="crew-launch">
-          <div class="crew-launch-mark"><span>06</span><b>MBTC</b></div>
-          <div>
-            <span class="card-label">Personnel files</span>
-            <h3>Meet the Touring Company</h3>
-            <p>Six hikers. Six highly questionable dossiers.</p>
+            <span class="booking-toggle"><span>Show</span><b>＋</b></span>
+          </summary>
+          <div class="booking-section-body">
+            <article class="converter-card">
+              <div class="converter-heading">
+                <div><span class="card-label">Trail currency</span><h3>Quick converter</h3></div>
+                <small id="currencyRateStatus">Loading rates…</small>
+              </div>
+              <div class="converter-controls">
+                <label>Amount <input id="currencyAmount" type="number" inputmode="decimal" min="0" step="0.01" value="100"></label>
+                <label>From <select id="currencyFrom"><option value="USD">USD · United States</option><option value="EUR">EUR · France & Italy</option><option value="CHF">CHF · Switzerland</option></select></label>
+                <label>To <select id="currencyTo"><option value="EUR">EUR · France & Italy</option><option value="CHF">CHF · Switzerland</option><option value="USD">USD · United States</option></select></label>
+                <button class="swap-btn" id="swapCurrencyBtn" type="button" aria-label="Swap currencies">⇄ Swap currencies</button>
+              </div>
+              <output class="conversion-result" id="currencyResult">—</output>
+            </article>
+            <div class="section-heading compact" style="margin-top: 1.5rem;">
+              <p class="kicker">Local trail ledger</p>
+              <h3>Split expenses</h3>
+            </div>
+            <div class="expense-grid">
+              <article class="expense-card">
+                <span class="card-label">Running total</span>
+                <div class="big-number" id="expenseTotal">$0.00</div>
+                <p id="perPersonTotal">$0.00 per person</p>
+                <div class="button-row">
+                  <button class="primary-btn" type="button" id="addExpenseBtn">Add expense</button>
+                  <button class="ghost-btn" type="button" id="clearExpensesBtn">Clear</button>
+                </div>
+              </article>
+              <article class="expense-card">
+                <span class="card-label">Settle up</span>
+                <div class="settle-list" id="settleList"></div>
+              </article>
+              <article class="expense-card wide">
+                <span class="card-label">Expense log</span>
+                <div class="expense-list" id="expenseList"></div>
+              </article>
+            </div>
           </div>
-          <button class="primary-btn" type="button" data-open-crew>Open profiles</button>
-        </article>
+        </details>
+        <div class="section-heading compact">
+          <p class="kicker">Before departure</p>
+          <h2>Prep checklist</h2>
+        </div>
         <div class="info-grid">
           <article class="info-card">
             <span class="card-label">Before departure</span>
