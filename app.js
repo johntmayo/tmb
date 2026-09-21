@@ -680,6 +680,74 @@ function renderOpenItems() {
   $("#pendingList").innerHTML = OPEN_ITEMS.map((item) => `<span>${escapeHtml(item)}</span>`).join("");
 }
 
+function compactRide(leg) {
+  return `${leg.mode}: ${leg.route}`;
+}
+
+function renderReferenceCard() {
+  $("#referenceCardDays").innerHTML = HIKING_DAYS.map((day) => {
+    const before = (day.transfers || []).filter((leg) => leg.phase === "before");
+    const after = (day.transfers || []).filter((leg) => leg.phase === "after");
+    const rides = [
+      ...before.map((leg) => `<span><b>TO TRAIL</b> ${escapeHtml(compactRide(leg))}</span>`),
+      ...after.map((leg) => `<span><b>TO BED</b> ${escapeHtml(compactRide(leg))}</span>`)
+    ];
+    return `
+      <section class="pocket-day">
+        <div class="pocket-day-number">${String(day.hikeDay).padStart(2, "0")}</div>
+        <div class="pocket-day-main">
+          <h3>${escapeHtml(day.title)}</h3>
+          <div class="pocket-stats">
+            <strong>${day.hike.distanceMi} mi</strong>
+            <span>${escapeHtml(day.hike.duration)}</span>
+            <span>↑ ${day.hike.ascentFt.toLocaleString()} ft</span>
+            <span>↓ ${day.hike.descentFt.toLocaleString()} ft</span>
+          </div>
+          <div class="pocket-rides">${rides.join("") || "<span><b>RIDES</b> None</span>"}</div>
+        </div>
+      </section>
+    `;
+  }).join("");
+}
+
+function renderCrew() {
+  $("#crewGrid").innerHTML = Array.from({ length: 6 }, (_, index) => `
+    <article class="crew-profile">
+      <div class="crew-photo" aria-label="Photo coming soon"><span>${String(index + 1).padStart(2, "0")}</span></div>
+      <div>
+        <p>Company member ${String(index + 1).padStart(2, "0")}</p>
+        <h3>Classified for now</h3>
+        <span>Portrait, title, and highly questionable biography forthcoming.</span>
+      </div>
+    </article>
+  `).join("");
+}
+
+function setupSpecialViews() {
+  const referenceViewer = $("#referenceCardViewer");
+  const crewViewer = $("#crewViewer");
+  const setOpen = (viewer, open) => {
+    viewer.hidden = !open;
+    document.body.classList.toggle("overlay-open", open);
+  };
+
+  $("#openReferenceCardBtn").addEventListener("click", () => setOpen(referenceViewer, true));
+  $("#closeReferenceCardBtn").addEventListener("click", () => setOpen(referenceViewer, false));
+  $("#printReferenceCardBtn").addEventListener("click", () => window.print());
+  $("#openCrewBtn").addEventListener("click", () => setOpen(crewViewer, true));
+  $("#closeCrewBtn").addEventListener("click", () => setOpen(crewViewer, false));
+  [referenceViewer, crewViewer].forEach((viewer) => {
+    viewer.addEventListener("click", (event) => {
+      if (event.target === viewer) setOpen(viewer, false);
+    });
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    setOpen(referenceViewer, false);
+    setOpen(crewViewer, false);
+  });
+}
+
 function renderContacts() {
   $("#contactsForm").innerHTML = contacts.map((contact, index) => `
     <div class="contact-row">
@@ -925,7 +993,7 @@ function setupInstall() {
     deferredInstallPrompt = null;
     $("#installBtn").hidden = true;
   });
-  window.addEventListener("appinstalled", () => showToast("Tiens Bon! installed"));
+  window.addEventListener("appinstalled", () => showToast("Mont Blanc Touring Company installed"));
 }
 
 function showToast(message) {
@@ -951,12 +1019,15 @@ function init() {
   renderBookings();
   renderPretripChecklist();
   renderOpenItems();
+  renderReferenceCard();
+  renderCrew();
   renderContacts();
   renderExpenses();
   setupCurrencyConverter();
   setupExpenseModal();
   setupDayNavigation();
   setupNavigation();
+  setupSpecialViews();
   setupInstall();
   updateConnectionStatus();
   window.addEventListener("online", updateConnectionStatus);

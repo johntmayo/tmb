@@ -1,7 +1,7 @@
 {
-  "name": "Tiens Bon! — TMB 2026",
-  "short_name": "Tiens Bon!",
-  "description": "RSG 2026 six-day Tour du Mont Blanc hiking field guide.",
+  "name": "Mont Blanc Touring Company",
+  "short_name": "MB Touring",
+  "description": "Rachel's Friggin 40th six-day Tour du Mont Blanc hiking field guide.",
   "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",

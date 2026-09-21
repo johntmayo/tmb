@@ -1864,6 +1864,291 @@ select:focus {
   font-size: .76rem;
 }
 
+.reference-launch {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  margin-top: 12px;
+  padding: 15px;
+  border: 1px solid rgba(242, 185, 49, .38);
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(242, 185, 49, .13), rgba(143, 199, 217, .05)),
+    rgba(7, 25, 18, .84);
+}
+
+.reference-launch h3 {
+  margin: 3px 0;
+  font-family: var(--serif);
+  font-size: 1.55rem;
+  letter-spacing: -.04em;
+}
+
+.reference-launch p {
+  margin: 0;
+  color: var(--mist);
+  font-size: .78rem;
+}
+
+.card-viewer,
+.crew-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  overflow: auto;
+  background: rgba(1, 9, 5, .94);
+  backdrop-filter: blur(18px);
+}
+
+.card-viewer[hidden],
+.crew-viewer[hidden] {
+  display: none;
+}
+
+.card-viewer {
+  display: grid;
+  place-items: center;
+  padding: 66px 10px 18px;
+}
+
+.card-viewer-actions {
+  position: fixed;
+  z-index: 1;
+  top: max(10px, env(safe-area-inset-top));
+  right: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.pocket-card {
+  width: min(calc(100vw - 20px), calc((100svh - 92px) * .6), 450px);
+  aspect-ratio: 3 / 5;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  border: 1px solid #c9b77e;
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 27px, rgba(44, 82, 98, .12) 28px),
+    #f5edda;
+  color: #14251e;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, .56);
+  font-family: var(--sans);
+}
+
+.pocket-card > header {
+  padding: 4.5% 5% 3%;
+  border-bottom: 3px double rgba(20, 37, 30, .34);
+}
+
+.pocket-card > header p {
+  margin: 0;
+  color: #9b2837;
+  font-size: clamp(.46rem, 1.8vw, .68rem);
+  font-weight: 950;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+}
+
+.pocket-card > header h2 {
+  margin: 1% 0;
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 6vw, 2.15rem);
+  line-height: .9;
+  letter-spacing: -.055em;
+}
+
+.pocket-card > header span {
+  font-size: clamp(.48rem, 1.9vw, .72rem);
+  font-weight: 750;
+}
+
+.pocket-card-days {
+  display: grid;
+  grid-template-rows: repeat(6, 1fr);
+  min-height: 0;
+  padding: 1% 4%;
+}
+
+.pocket-day {
+  display: grid;
+  grid-template-columns: 9% 1fr;
+  gap: 3%;
+  align-items: center;
+  min-height: 0;
+  border-bottom: 1px solid rgba(20, 37, 30, .22);
+}
+
+.pocket-day:last-child {
+  border-bottom: 0;
+}
+
+.pocket-day-number {
+  font-family: var(--serif);
+  color: #9b2837;
+  font-size: clamp(.85rem, 4vw, 1.35rem);
+  font-weight: 900;
+}
+
+.pocket-day-main {
+  min-width: 0;
+}
+
+.pocket-day h3 {
+  overflow: hidden;
+  margin: 0 0 1%;
+  font-family: var(--serif);
+  font-size: clamp(.62rem, 2.9vw, 1rem);
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pocket-stats {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 2%;
+  justify-content: start;
+  font-size: clamp(.43rem, 1.8vw, .67rem);
+  white-space: nowrap;
+}
+
+.pocket-stats strong {
+  color: #9b2837;
+}
+
+.pocket-rides {
+  display: flex;
+  gap: 3%;
+  overflow: hidden;
+  margin-top: 1%;
+  font-size: clamp(.38rem, 1.55vw, .57rem);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.pocket-rides span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pocket-rides b {
+  color: #226076;
+  letter-spacing: .04em;
+}
+
+.pocket-card > footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 3%;
+  margin: 0;
+  padding: 2.5% 5%;
+  border-top: 3px double rgba(20, 37, 30, .34);
+  color: #14251e;
+  font-size: clamp(.42rem, 1.7vw, .64rem);
+  text-transform: uppercase;
+}
+
+.pocket-card > footer strong {
+  color: #9b2837;
+}
+
+.crew-viewer {
+  padding: max(14px, env(safe-area-inset-top)) 10px max(14px, env(safe-area-inset-bottom));
+}
+
+.crew-sheet {
+  width: min(820px, 100%);
+  min-height: 100%;
+  margin: auto;
+  padding: 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: 28px;
+  background: #0b281f;
+}
+
+.crew-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  align-items: start;
+}
+
+.crew-head h2 {
+  margin: 3px 0 0;
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 12vw, 5rem);
+  line-height: .86;
+  letter-spacing: -.07em;
+}
+
+.crew-intro {
+  max-width: 42rem;
+  color: var(--mist);
+}
+
+.crew-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.crew-profile {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 13px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: rgba(243, 234, 212, .045);
+}
+
+.crew-photo {
+  aspect-ratio: 4 / 5;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 50% 32%, var(--mist) 0 13%, transparent 14%),
+    radial-gradient(ellipse at 50% 105%, var(--mist) 0 42%, transparent 43%),
+    rgba(143, 199, 217, .08);
+  color: var(--yellow);
+  font-family: var(--serif);
+}
+
+.crew-profile p {
+  margin: 0;
+  color: var(--yellow);
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.crew-profile h3 {
+  margin: 2px 0;
+  font-family: var(--serif);
+  font-size: 1.35rem;
+}
+
+.crew-profile > div:last-child > span {
+  color: var(--mist);
+  font-size: .78rem;
+}
+
+.company-secret {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--mist);
+  text-align: right;
+}
+
+body.overlay-open {
+  overflow: hidden;
+}
+
 .modal {
   position: fixed;
   inset: 0;
@@ -1985,6 +2270,10 @@ footer strong {
   .form-grid {
     grid-template-columns: 1fr 1fr;
   }
+
+  .crew-grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 @media (min-width: 820px) {
@@ -2078,5 +2367,50 @@ footer strong {
     scroll-behavior: auto !important;
     animation-duration: .01ms !important;
     transition-duration: .01ms !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .reference-launch {
+    grid-template-columns: 1fr;
+  }
+
+  .reference-launch .primary-btn {
+    width: 100%;
+  }
+}
+
+@media print {
+  @page {
+    size: 3in 5in;
+    margin: 0;
+  }
+
+  body > * {
+    display: none !important;
+  }
+
+  #referenceCardViewer {
+    position: static;
+    display: block !important;
+    width: 3in;
+    height: 5in;
+    overflow: hidden;
+    padding: 0;
+    background: none;
+  }
+
+  .card-viewer-actions {
+    display: none !important;
+  }
+
+  .pocket-card {
+    width: 3in;
+    height: 5in;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
   }
 }

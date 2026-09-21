@@ -106,6 +106,14 @@
           <div><span class="card-label">European emergency</span><a href="tel:112">112</a></div>
           <p>France mountain rescue: 112 · Italy: 112/118 · Switzerland medical: 144 · Rega alpine rescue: 1414</p>
         </div>
+        <article class="reference-launch">
+          <div>
+            <span class="card-label">Screenshot companion</span>
+            <h3>Six-day pocket card</h3>
+            <p>Miles, time, climbing, descending, and every ride—on one 3×5 card.</p>
+          </div>
+          <button class="primary-btn" id="openReferenceCardBtn" type="button">Open card</button>
+        </article>
         <div class="info-grid toolkit-top-grid">
           <article class="info-card">
             <span class="card-label">Weather check</span>
@@ -198,8 +206,38 @@
 
     <footer>
       <strong>Rachel's Friggin 40th</strong>
-      <span>Mont Blanc Touring Company</span>
+      <button class="company-secret" id="openCrewBtn" type="button">Mont Blanc Touring Company</button>
     </footer>
+  </div>
+
+  <div class="card-viewer" id="referenceCardViewer" role="dialog" aria-modal="true" aria-labelledby="referenceCardTitle" hidden>
+    <div class="card-viewer-actions">
+      <button class="ghost-btn" id="printReferenceCardBtn" type="button">Print</button>
+      <button class="icon-btn" id="closeReferenceCardBtn" type="button" aria-label="Close reference card">×</button>
+    </div>
+    <article class="pocket-card" id="referenceCard">
+      <header>
+        <p>Mont Blanc Touring Company</p>
+        <h2 id="referenceCardTitle">Six days around the mountain</h2>
+        <span>Rachel’s Friggin 40th · Sept 23–28</span>
+      </header>
+      <div class="pocket-card-days" id="referenceCardDays"></div>
+      <footer><span>↑ ascent</span><span>↓ descent</span><strong>Tiens Bon!</strong></footer>
+    </article>
+  </div>
+
+  <div class="crew-viewer" id="crewViewer" role="dialog" aria-modal="true" aria-labelledby="crewTitle" hidden>
+    <div class="crew-sheet">
+      <div class="crew-head">
+        <div>
+          <p class="kicker">Personnel file · confidential-ish</p>
+          <h2 id="crewTitle">The Touring Company</h2>
+        </div>
+        <button class="icon-btn" id="closeCrewBtn" type="button" aria-label="Close crew profiles">×</button>
+      </div>
+      <p class="crew-intro">Six hikers. One mountain. Profiles coming as soon as management receives the incriminating photographs.</p>
+      <div class="crew-grid" id="crewGrid"></div>
+    </div>
   </div>
 
   <div class="modal" id="expenseModal" role="dialog" aria-modal="true" aria-labelledby="expenseModalTitle">

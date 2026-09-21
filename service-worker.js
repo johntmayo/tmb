@@ -1,4 +1,4 @@
-const CACHE_NAME = "tiens-bon-v10";
+const CACHE_NAME = "mont-blanc-touring-v11";
 const APP_SHELL = [
   "./",
   "./index.html",
