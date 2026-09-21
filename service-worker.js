@@ -23,7 +23,13 @@ const APP_SHELL = [
   "./resources/images/places/col-de-la-seigne.jpg",
   "./resources/images/places/grand-col-ferret.jpg",
   "./resources/images/places/alp-bovine.jpg",
-  "./resources/images/places/aiguillette-des-posettes.jpg"
+  "./resources/images/places/aiguillette-des-posettes.jpg",
+  "./resources/images/crew/rachel.webp",
+  "./resources/images/crew/david.webp",
+  "./resources/images/crew/colleen.webp",
+  "./resources/images/crew/marcel.webp",
+  "./resources/images/crew/arin.webp",
+  "./resources/images/crew/john.webp"
 ];
 
 self.addEventListener("install", (event) => {
