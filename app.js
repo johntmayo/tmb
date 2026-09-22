@@ -518,6 +518,10 @@ function initializeMap() {
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 18
   }).addTo(map);
+  map.createPane("routePane");
+  map.getPane("routePane").style.zIndex = 450;
+  map.createPane("markerPane");
+  map.getPane("markerPane").style.zIndex = 650;
   updateMap();
 }
 
@@ -556,11 +560,13 @@ function updateMap() {
       opacity: feature.properties.transport ? 0.85 : 1,
       dashArray: feature.properties.transport ? "8 6" : null,
       lineCap: "round",
-      lineJoin: "round"
+      lineJoin: "round",
+      pane: "routePane"
     }),
     pointToLayer: (feature, latlng) => {
       if (feature.properties.lodging) {
         return L.marker(latlng, {
+          pane: "markerPane",
           title: feature.properties.name,
           alt: `Overnight: ${feature.properties.name}`,
           icon: L.divIcon({
@@ -573,6 +579,7 @@ function updateMap() {
         });
       }
       return L.circleMarker(latlng, {
+        pane: "markerPane",
         radius: 5,
         color: "#071710",
         weight: 1.5,
