@@ -306,7 +306,7 @@ const CREW_PROFILES = [
   {
     name: "Colleen",
     title: "The Chilanga",
-    bio: "Philly-born, Mexico City-forged. Fit, flirty, and in charge if the Company gets into a bar fight. Make sure she has her passport.",
+    bio: "Philly-born, Mexico City-forged. Fit, flirty, and in charge if the Company gets into a bar fight. Make sure she has her passport. She did forget her toothbrush.",
     image: "resources/images/crew/colleen.webp"
   },
   {
