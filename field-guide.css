@@ -689,6 +689,10 @@ a {
   margin-top: 12px;
 }
 
+.toolkit-top-grid > .info-card {
+  grid-column: 1 / -1;
+}
+
 .tab-btn {
   min-width: 0;
   min-height: 51px;
@@ -745,6 +749,10 @@ a {
   margin-top: 32px;
 }
 
+.section-heading.compact h2 {
+  font-size: clamp(2rem, 9vw, 4rem);
+}
+
 .section-heading h2 {
   margin: 3px 0 7px;
   font-size: clamp(2.35rem, 12vw, 5.5rem);
@@ -770,7 +778,7 @@ a {
 }
 
 .booking-section-summary {
-  min-height: 124px;
+  min-height: 112px;
   display: flex;
   justify-content: space-between;
   gap: 18px;
@@ -787,7 +795,7 @@ a {
 .booking-section-summary h2 {
   margin: 3px 0 5px;
   font-family: var(--serif);
-  font-size: clamp(2.35rem, 12vw, 4.6rem);
+  font-size: clamp(2rem, 9vw, 3.6rem);
   line-height: .85;
   letter-spacing: -.075em;
 }
@@ -1982,7 +1990,7 @@ select:focus {
 
 .crew-launch {
   grid-template-columns: auto 1fr auto;
-  margin: -2px 0 14px;
+  margin: 12px 0 0;
   border-color: rgba(143, 199, 217, .38);
   background:
     linear-gradient(135deg, rgba(143, 199, 217, .13), rgba(242, 185, 49, .05)),
@@ -2012,6 +2020,18 @@ select:focus {
   color: #9b2837;
   font-size: .55rem;
   letter-spacing: .08em;
+}
+
+.money-subheading {
+  margin-top: 24px !important;
+}
+
+.money-subheading h3 {
+  margin: 3px 0 7px;
+  font-family: var(--serif);
+  font-size: clamp(1.75rem, 7vw, 2.8rem);
+  line-height: .9;
+  letter-spacing: -.06em;
 }
 
 .card-viewer,
