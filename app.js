@@ -703,7 +703,12 @@ function renderOpenItems() {
 }
 
 function compactRide(leg) {
-  return `${leg.mode}: ${leg.route}`;
+  return [
+    `${leg.mode}: ${leg.route}`,
+    leg.time,
+    leg.duration,
+    leg.detail
+  ].filter(Boolean).join(" · ");
 }
 
 function renderReferenceCard() {
@@ -711,21 +716,25 @@ function renderReferenceCard() {
     const before = (day.transfers || []).filter((leg) => leg.phase === "before");
     const after = (day.transfers || []).filter((leg) => leg.phase === "after");
     const rides = [
-      ...before.map((leg) => `<span><b>TO TRAIL</b> ${escapeHtml(compactRide(leg))}</span>`),
-      ...after.map((leg) => `<span><b>TO BED</b> ${escapeHtml(compactRide(leg))}</span>`)
+      ...before.map((leg) => `<div><b>TO TRAIL</b><span>${escapeHtml(compactRide(leg))}</span></div>`),
+      ...after.map((leg) => `<div><b>TO BED</b><span>${escapeHtml(compactRide(leg))}</span></div>`)
     ];
+    const stops = day.hike.stops.map((stop) => stop.name).join(" → ");
     return `
       <section class="pocket-day">
         <div class="pocket-day-number">${String(day.hikeDay).padStart(2, "0")}</div>
         <div class="pocket-day-main">
           <h3>${escapeHtml(day.title)}</h3>
           <div class="pocket-stats">
+            <strong>${escapeHtml(day.dateLabel)}</strong>
             <strong>${day.hike.distanceMi} mi</strong>
             <span>${escapeHtml(day.hike.duration)}</span>
             <span>↑ ${day.hike.ascentFt.toLocaleString()} ft</span>
             <span>↓ ${day.hike.descentFt.toLocaleString()} ft</span>
           </div>
-          <div class="pocket-rides">${rides.join("") || "<span><b>RIDES</b> None</span>"}</div>
+          <div class="pocket-time"><b>HIKE</b><span>${escapeHtml(day.hike.start)} → ${escapeHtml(day.hike.arrival)}</span></div>
+          <div class="pocket-stops"><b>STOPS</b><span>${escapeHtml(stops)}</span></div>
+          ${rides.length ? `<div class="pocket-rides">${rides.join("")}</div>` : ""}
         </div>
       </section>
     `;
